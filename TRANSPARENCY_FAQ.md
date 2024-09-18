@@ -8,7 +8,7 @@
   It uses prompt flow to search data from AI search vector store, summarize the retrieved documents with Azure Open AI.
 
   The sample solution for client advisor focuses on an advisor to save time and prepare relevant discussion topics for scheduled meetings. It provides an overview of daily client meetings with seamless navigation between viewing client profiles and chatting with data. The sample data is synthetic and is generated using ficticious names. This data intended for use as sample data only. The sample solution takes user input in text format and returns LLM responses in text format up to 800 tokens.
-  It uses semantic kernel to search data from AI search vector store and Azure SQL Database, summarize the results using Azure Open AI.
+  It uses semantic kernel to search data from Azure Database for PostgreSQL, summarize the results using Azure Open AI.
   
 - ### What is/are Build your own copilot Solution Accelerator’s intended use(s)?  
 

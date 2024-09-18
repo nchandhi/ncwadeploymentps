@@ -13,7 +13,7 @@ User story
 
 This solution accelerator is a powerful tool that helps you create your own copilots. The accelerator can be used by any customer looking for reusable architecture and code snippets to build custom copilots with their own enterprise data. 
 
-It leverages Azure Open AI Service, Azure AI Search and Microsoft Fabric, to streamline daily tasks and customer meeting preparation for customer-facing roles. As a result, this helps to improve client retention and customer satisfaction. By increasing employee productivity and improving customer conversations, our solution enables organizations to serve more customers and drive increased revenue for the entire company. 
+It leverages Azure Open AI Service, Azure Database for PostgreSQL, and Microsoft Fabric, to streamline daily tasks and customer meeting preparation for customer-facing roles. As a result, this helps to improve client retention and customer satisfaction. By increasing employee productivity and improving customer conversations, our solution enables organizations to serve more customers and drive increased revenue for the entire company. 
 
  
 **Scenario**
@@ -49,10 +49,9 @@ To use this solution accelerator, you will need access to an [Azure subscription
 For additional training and support, please see:
 
 1. [Azure Open AI](https://learn.microsoft.com/en-us/azure/ai-services/openai/) 
-2. [Azure AI Search](https://learn.microsoft.com/en-us/azure/search/) 
+2. [Azure Database for PostgreSQL](https://learn.microsoft.com/en-us/azure/postgresql/)  
 3. [Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/)
 4. [Azure App Service](https://learn.microsoft.com/en-us/azure/app-service/)
-5. [Azure SQL Database](https://learn.microsoft.com/en-us/azure/azure-sql/)
 6. [Microsoft Fabric](https://learn.microsoft.com/en-us/fabric/)
 
 ### Solution accelerator architecture
@@ -65,7 +64,7 @@ For additional training and support, please see:
 ### **How to install/deploy**
 
 1. Please check the link [Azure Products by Region](
-https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=all&regions=all) and choose a region where Azure AI Search, Semantic Ranker, Azure OpenAI Service, and Azure AI Studio are available. 
+https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?products=all&regions=all) and choose a region where Azure OpenAI Service, Azure Database for PostgreSQL are available. 
 
 2. Click the following deployment button to create the required resources for this accelerator in your Azure Subscription.
 
