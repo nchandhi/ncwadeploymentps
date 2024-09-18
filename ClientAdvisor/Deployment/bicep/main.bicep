@@ -97,7 +97,7 @@ module azOpenAI 'deploy_azure_open_ai.bicep' = {
   name: 'deploy_azure_open_ai'
   params: {
     solutionName: solutionPrefix
-    solutionLocation: resourceGroupLocation
+    solutionLocation: cosmosLocation
   }
 }
 

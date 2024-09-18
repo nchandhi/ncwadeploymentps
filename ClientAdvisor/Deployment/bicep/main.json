@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.28.1.47646",
-      "templateHash": "9265478660557153228"
+      "templateHash": "777221868148543676"
     }
   },
   "parameters": {
@@ -794,7 +794,7 @@
             "value": "[parameters('solutionPrefix')]"
           },
           "solutionLocation": {
-            "value": "[variables('resourceGroupLocation')]"
+            "value": "[parameters('cosmosLocation')]"
           }
         },
         "template": {
@@ -804,7 +804,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.28.1.47646",
-              "templateHash": "16634912007560166724"
+              "templateHash": "12686683598246427719"
             }
           },
           "parameters": {
@@ -847,16 +847,16 @@
             {
               "type": "Microsoft.CognitiveServices/accounts/deployments",
               "apiVersion": "2023-05-01",
-              "name": "[format('{0}/{1}', parameters('accounts_byc_openai_name'), 'gpt-4')]",
+              "name": "[format('{0}/{1}', parameters('accounts_byc_openai_name'), 'gpt-4o')]",
               "sku": {
                 "name": "Standard",
-                "capacity": 10
+                "capacity": 40
               },
               "properties": {
                 "model": {
                   "format": "OpenAI",
-                  "name": "gpt-4",
-                  "version": "0125-Preview"
+                  "name": "gpt-4o",
+                  "version": "2024-08-06"
                 },
                 "versionUpgradeOption": "OnceCurrentVersionExpired",
                 "raiPolicyName": "Microsoft.Default"
@@ -883,7 +883,7 @@
                 "raiPolicyName": "Microsoft.Default"
               },
               "dependsOn": [
-                "[resourceId('Microsoft.CognitiveServices/accounts/deployments', parameters('accounts_byc_openai_name'), 'gpt-4')]",
+                "[resourceId('Microsoft.CognitiveServices/accounts/deployments', parameters('accounts_byc_openai_name'), 'gpt-4o')]",
                 "[resourceId('Microsoft.CognitiveServices/accounts', parameters('accounts_byc_openai_name'))]"
               ]
             }
