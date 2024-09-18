@@ -13,6 +13,7 @@ param dbInstanceType string = 'Standard_B1ms'
 // param haMode string = 'ZoneRedundant'
 param availabilityZone string = '1'
 param allowAllIPsFirewall bool = true
+param allowAzureIPsFirewall bool = true
 @description('PostgreSQL version')
 @allowed([
   '11'
@@ -53,8 +54,10 @@ resource serverName_resource 'Microsoft.DBforPostgreSQL/flexibleServers@2021-06-
       backupRetentionDays: 7
       geoRedundantBackup: 'Disabled'
     }
+    network: {
+      publicNetworkAccess: 'Enabled'
+    }
     availabilityZone: availabilityZone
-
   }
 }
 
@@ -77,6 +80,14 @@ resource firewall_all 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2
   }
 }
 
+resource firewall_azure 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2023-03-01-preview' = if (allowAzureIPsFirewall) {
+  parent: serverName_resource
+  name: 'allow-all-azure-internal-IPs'
+  properties: {
+    startIpAddress: '0.0.0.0'
+    endIpAddress: '0.0.0.0'
+  }
+}
 
 resource configurations 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2023-03-01-preview' = {
   name: 'azure.extensions'
@@ -86,7 +97,7 @@ resource configurations 'Microsoft.DBforPostgreSQL/flexibleServers/configuration
     source: 'user-override'
   }
   dependsOn: [
-    firewall_all
+    firewall_all,firewall_azure
   ]
 }
 

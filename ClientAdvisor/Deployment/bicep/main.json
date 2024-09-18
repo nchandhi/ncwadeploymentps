@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.28.1.47646",
-      "templateHash": "777221868148543676"
+      "templateHash": "9198002589435669993"
     }
   },
   "parameters": {
@@ -474,7 +474,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.28.1.47646",
-              "templateHash": "3218904978934551004"
+              "templateHash": "16792506151753544249"
             }
           },
           "parameters": {
@@ -522,6 +522,10 @@
               "type": "bool",
               "defaultValue": true
             },
+            "allowAzureIPsFirewall": {
+              "type": "bool",
+              "defaultValue": true
+            },
             "version": {
               "type": "string",
               "defaultValue": "16",
@@ -562,6 +566,9 @@
                   "backupRetentionDays": 7,
                   "geoRedundantBackup": "Disabled"
                 },
+                "network": {
+                  "publicNetworkAccess": "Enabled"
+                },
                 "availabilityZone": "[parameters('availabilityZone')]"
               }
             },
@@ -579,6 +586,19 @@
               ]
             },
             {
+              "condition": "[parameters('allowAzureIPsFirewall')]",
+              "type": "Microsoft.DBforPostgreSQL/flexibleServers/firewallRules",
+              "apiVersion": "2023-03-01-preview",
+              "name": "[format('{0}/{1}', parameters('serverName'), 'allow-all-azure-internal-IPs')]",
+              "properties": {
+                "startIpAddress": "0.0.0.0",
+                "endIpAddress": "0.0.0.0"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', parameters('serverName'))]"
+              ]
+            },
+            {
               "type": "Microsoft.DBforPostgreSQL/flexibleServers/configurations",
               "apiVersion": "2023-03-01-preview",
               "name": "[format('{0}/{1}', parameters('serverName'), 'azure.extensions')]",
@@ -588,6 +608,7 @@
               },
               "dependsOn": [
                 "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers/firewallRules', parameters('serverName'), 'allow-all-IPs')]",
+                "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers/firewallRules', parameters('serverName'), 'allow-all-azure-internal-IPs')]",
                 "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', parameters('serverName'))]"
               ]
             }
