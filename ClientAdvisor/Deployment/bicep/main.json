@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.28.1.47646",
-      "templateHash": "17979613690322448973"
+      "templateHash": "17671027464182777932"
     }
   },
   "parameters": {
@@ -474,7 +474,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.28.1.47646",
-              "templateHash": "11954147161141165939"
+              "templateHash": "6840365401184602512"
             }
           },
           "parameters": {
@@ -489,7 +489,7 @@
             },
             "serverName": {
               "type": "string",
-              "defaultValue": "[format('{0}.postgres.database.azure.com', parameters('solutionName'))]",
+              "defaultValue": "[format('{0}-postgres', parameters('solutionName'))]",
               "metadata": {
                 "description": "The name of the SQL logical server."
               }

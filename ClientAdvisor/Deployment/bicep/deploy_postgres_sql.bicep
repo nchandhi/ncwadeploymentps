@@ -2,7 +2,7 @@ param solutionName string
 param solutionLocation string
 param managedIdentityObjectId string
 @description('The name of the SQL logical server.')
-param serverName string = '${ solutionName }.postgres.database.azure.com'
+param serverName string = '${solutionName}-postgres'
 
 param administratorLogin string = 'admintest'
 @secure()
