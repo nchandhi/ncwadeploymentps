@@ -1,4 +1,4 @@
-# Build your own copilot Solution Accelerator
+# Build your own copilot with PostgreSQL Solution Accelerator
 
 MENU: [**USER STORY**](#user-story) \| [**QUICK DEPLOY**](#quick-deploy)  \| [**SUPPORTING DOCUMENTS**](#supporting-documents) \|
 [**CUSTOMER TRUTH**](#customer-truth)
