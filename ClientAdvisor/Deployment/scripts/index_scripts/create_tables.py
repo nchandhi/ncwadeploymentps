@@ -315,3 +315,41 @@ df['ConversationId'] = ''
 for index, item in df.iterrows():
     cursor.execute(f"INSERT INTO ClientMeetings (ClientId,ConversationId,Title,StartTime,EndTime,Advisor,ClientEmail) VALUES (%s,%s,%s,%s,%s,%s,%s)", (item.ClientId, item.ConversationId, item.Title, item.StartTime, item.EndTime, item.Advisor, item.ClientEmail))
 conn.commit()
+
+
+cursor = conn.cursor()
+
+cursor.execute('DROP TABLE IF EXISTS conversations')
+conn.commit()
+
+create_cs_sql = """CREATE TABLE conversations (
+                    id TEXT PRIMARY KEY,
+                    type TEXT NOT NULL,
+                    created_at TEXT,
+                    updated_at TEXT,
+                    user_id TEXT NOT NULL,
+                    title TEXT
+                );"""
+
+cursor.execute(create_cs_sql)
+conn.commit()
+
+cursor = conn.cursor()
+
+cursor.execute('DROP TABLE IF EXISTS messages')
+conn.commit()
+
+create_cs_sql = """CREATE TABLE messages (
+                    id TEXT PRIMARY KEY,
+                    type VARCHAR(50) NOT NULL,
+                    created_at TEXT,
+                    updated_at TEXT,
+                    user_id TEXT NOT NULL,
+                    conversation_id TEXT NOT NULL,
+                    role VARCHAR(50),
+                    content TEXT NOT NULL,
+                    feedback TEXT
+                );"""
+
+cursor.execute(create_cs_sql)
+conn.commit()

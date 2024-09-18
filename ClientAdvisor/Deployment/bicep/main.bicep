@@ -68,7 +68,7 @@ module PostgreSQLDBModule 'deploy_postgres_sql.bicep' = {
   name: 'deploy_postgres_sql'
   params: {
     solutionName: solutionPrefix
-    solutionLocation: solutionLocation
+    solutionLocation: cosmosLocation
     managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
   }
   scope: resourceGroup(resourceGroup().name)
