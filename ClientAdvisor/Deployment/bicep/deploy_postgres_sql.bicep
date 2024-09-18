@@ -12,6 +12,7 @@ param skuSizeGB int = 32
 param dbInstanceType string = 'Standard_B1ms'
 // param haMode string = 'ZoneRedundant'
 param availabilityZone string = '1'
+param allowAllIPsFirewall bool = true
 @description('PostgreSQL version')
 @allowed([
   '11'
@@ -23,13 +24,13 @@ param availabilityZone string = '1'
 ])
 param version string = '16'
 
-var firewallrules = [
-  {
-    Name: 'rule1'
-    StartIpAddress: '0.0.0.0'
-    EndIpAddress: '255.255.255.255'
-  }
-]
+// var firewallrules = [
+//   {
+//     Name: 'rule1'
+//     StartIpAddress: '0.0.0.0'
+//     EndIpAddress: '255.255.255.255'
+//   }
+// ]
 resource serverName_resource 'Microsoft.DBforPostgreSQL/flexibleServers@2021-06-01' = {
   name: serverName
   location: solutionLocation
@@ -57,14 +58,24 @@ resource serverName_resource 'Microsoft.DBforPostgreSQL/flexibleServers@2021-06-
   }
 }
 
-resource serverName_firewallrules 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2021-06-01' = [for rule in firewallrules: {
+// resource serverName_firewallrules 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2021-06-01' = [for rule in firewallrules: {
+//   parent: serverName_resource
+//   name: rule.Name
+//   properties: {
+//     startIpAddress: rule.StartIpAddress
+//     endIpAddress: rule.EndIpAddress
+//   }
+// }]
+
+
+resource firewall_all 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2023-03-01-preview' = if (allowAllIPsFirewall) {
   parent: serverName_resource
-  name: rule.Name
+  name: 'allow-all-IPs'
   properties: {
-    startIpAddress: rule.StartIpAddress
-    endIpAddress: rule.EndIpAddress
+    startIpAddress: '0.0.0.0'
+    endIpAddress: '255.255.255.255'
   }
-}]
+}
 
 
 resource configurations 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2023-03-01-preview' = {
@@ -75,7 +86,7 @@ resource configurations 'Microsoft.DBforPostgreSQL/flexibleServers/configuration
     source: 'user-override'
   }
   dependsOn: [
-    serverName_firewallrules
+    firewall_all
   ]
 }
 

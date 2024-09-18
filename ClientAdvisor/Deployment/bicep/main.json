@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.28.1.47646",
-      "templateHash": "9067981480337712099"
+      "templateHash": "9265478660557153228"
     }
   },
   "parameters": {
@@ -474,7 +474,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.28.1.47646",
-              "templateHash": "6840365401184602512"
+              "templateHash": "3218904978934551004"
             }
           },
           "parameters": {
@@ -518,6 +518,10 @@
               "type": "string",
               "defaultValue": "1"
             },
+            "allowAllIPsFirewall": {
+              "type": "bool",
+              "defaultValue": true
+            },
             "version": {
               "type": "string",
               "defaultValue": "16",
@@ -533,15 +537,6 @@
                 "description": "PostgreSQL version"
               }
             }
-          },
-          "variables": {
-            "firewallrules": [
-              {
-                "Name": "rule1",
-                "StartIpAddress": "0.0.0.0",
-                "EndIpAddress": "255.255.255.255"
-              }
-            ]
           },
           "resources": [
             {
@@ -571,16 +566,13 @@
               }
             },
             {
-              "copy": {
-                "name": "serverName_firewallrules",
-                "count": "[length(variables('firewallrules'))]"
-              },
+              "condition": "[parameters('allowAllIPsFirewall')]",
               "type": "Microsoft.DBforPostgreSQL/flexibleServers/firewallRules",
-              "apiVersion": "2021-06-01",
-              "name": "[format('{0}/{1}', parameters('serverName'), variables('firewallrules')[copyIndex()].Name)]",
+              "apiVersion": "2023-03-01-preview",
+              "name": "[format('{0}/{1}', parameters('serverName'), 'allow-all-IPs')]",
               "properties": {
-                "startIpAddress": "[variables('firewallrules')[copyIndex()].StartIpAddress]",
-                "endIpAddress": "[variables('firewallrules')[copyIndex()].EndIpAddress]"
+                "startIpAddress": "0.0.0.0",
+                "endIpAddress": "255.255.255.255"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', parameters('serverName'))]"
@@ -595,7 +587,7 @@
                 "source": "user-override"
               },
               "dependsOn": [
-                "serverName_firewallrules",
+                "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers/firewallRules', parameters('serverName'), 'allow-all-IPs')]",
                 "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', parameters('serverName'))]"
               ]
             }

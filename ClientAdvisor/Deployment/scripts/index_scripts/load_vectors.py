@@ -223,7 +223,7 @@ for path in paths:
         id = base64.urlsafe_b64encode(bytes(d["chunk_id"], encoding='utf-8')).decode('utf-8')
 
         cur.execute(f"INSERT INTO calltranscripts (id,chunk_id, client_id, content, sourceurl, contentVector) VALUES (%s,%s,%s,%s,%s,%s)", (id, d["chunk_id"], d["client_id"], d["content"], path.name.split('/')[-1], v_contentVector))
-    #     break
+        #break
     # break
 
 cur.close()
