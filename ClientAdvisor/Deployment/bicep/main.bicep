@@ -131,7 +131,7 @@ module azureFunctions 'deploy_azure_function_script.bicep' = {
     // sqlDbUser:sqlDBModule.outputs.sqlDbOutput.sqlDbUser
     // sqlDbPwd:sqlDBModule.outputs.sqlDbOutput.sqlDbPwd
     postgresqlServerName:PostgreSQLDBModule.outputs.postgreSQLDbOutput.postgresqlServerName
-    postgresqlDbName:PostgreSQLDBModule.outputs.postgreSQLDbOutput.postgresqlDbName
+    postgresqlDbName:PostgreSQLDBModule.outputs.postgreSQLDbOutput.postgreSQLDatabaseName
     postgresqlDbUser:PostgreSQLDBModule.outputs.postgreSQLDbOutput.postgresqlDbUser
     postgresqlDbPwd:PostgreSQLDBModule.outputs.postgreSQLDbOutput.postgresqlDbPwd
     sslMode:'Require'
@@ -178,7 +178,7 @@ module keyvaultModule 'deploy_keyvault.bicep' = {
     // sqlDbUser:sqlDBModule.outputs.sqlDbOutput.sqlDbUser
     // sqlDbPwd:sqlDBModule.outputs.sqlDbOutput.sqlDbPwd
     postgresqlServerName:PostgreSQLDBModule.outputs.postgreSQLDbOutput.postgresqlServerName
-    postgresqlDbName:PostgreSQLDBModule.outputs.postgreSQLDbOutput.postgresqlDbName
+    postgresqlDbName:PostgreSQLDBModule.outputs.postgreSQLDbOutput.postgreSQLDatabaseName
     postgresqlDbUser:PostgreSQLDBModule.outputs.postgreSQLDbOutput.postgresqlDbUser
     postgresqlDbPwd:PostgreSQLDBModule.outputs.postgreSQLDbOutput.postgresqlDbPwd
     sslMode:'Require'
@@ -257,7 +257,7 @@ module appserviceModule 'deploy_app_service.bicep' = {
     // SQLDB_USERNAME:sqlDBModule.outputs.sqlDbOutput.sqlDbUser
     // SQLDB_PASSWORD:sqlDBModule.outputs.sqlDbOutput.sqlDbPwd
     POSTGRESQL_SERVER:PostgreSQLDBModule.outputs.postgreSQLDbOutput.postgresqlServerName
-    POSTGRESQL_DATABASE:PostgreSQLDBModule.outputs.postgreSQLDbOutput.postgresqlDbName
+    POSTGRESQL_DATABASE:PostgreSQLDBModule.outputs.postgreSQLDbOutput.postgreSQLDatabaseName
     POSTGRESQL_USERNAME:PostgreSQLDBModule.outputs.postgreSQLDbOutput.postgresqlDbUser
     POSTGRESQL_PASSWORD:PostgreSQLDBModule.outputs.postgreSQLDbOutput.postgresqlDbPwd
     AZURE_COSMOSDB_ACCOUNT: cosmosDBModule.outputs.cosmosOutput.cosmosAccountName
