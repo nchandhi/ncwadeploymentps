@@ -7,7 +7,7 @@ param identity string
 
 resource create_index 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   kind:'AzureCLI'
-  name: 'create_search_indexes'
+  name: 'create_data_scripts'
   location: solutionLocation // Replace with your desired location
   identity: {
     type: 'UserAssigned'
@@ -17,7 +17,7 @@ resource create_index 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   }
   properties: {
     azCliVersion: '2.52.0'
-    primaryScriptUri: '${baseUrl}Deployment/scripts/run_create_index_scripts.sh' 
+    primaryScriptUri: '${baseUrl}Deployment/scripts/run_create_data_scripts.sh' 
     arguments: '${baseUrl} ${keyVaultName}' // Specify any arguments for the script
     timeout: 'PT1H' // Specify the desired timeout duration
     retentionInterval: 'PT1H' // Specify the desired retention interval

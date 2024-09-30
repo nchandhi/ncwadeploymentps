@@ -8,14 +8,14 @@ baseUrl="$4"
 azureOpenAIApiKey="$5"
 azureOpenAIApiVersion="$6"
 azureOpenAIEndpoint="$7"
-azureSearchAdminKey="$8"
-azureSearchServiceEndpoint="$9"
-azureSearchIndex="${10}"
-postgresqlServerName="${11}"
-postgresqlDbName="${12}"
-postgresqlDbUser="${13}"
-postgresqlDbPwd="${14}"
-sslMode="${15}"
+# azureSearchAdminKey="$8"
+# azureSearchServiceEndpoint="$9"
+# azureSearchIndex="${10}"
+postgresqlServerName="${8}"
+postgresqlDbName="${9}"
+postgresqlDbUser="${10}"
+postgresqlDbPwd="${11}"
+sslMode="${12}"
 
 azureOpenAIDeploymentModel="gpt-4"
 azureOpenAIEmbeddingDeployment="text-embedding-ada-002"
@@ -47,9 +47,10 @@ az functionapp config appsettings set --name $functionappname -g $resourceGroupN
                 --settings AZURE_OPEN_AI_API_KEY=$azureOpenAIApiKey AZURE_OPEN_AI_DEPLOYMENT_MODEL=$azureOpenAIDeploymentModel \
                 AZURE_OPEN_AI_ENDPOINT=$azureOpenAIEndpoint AZURE_OPENAI_EMBEDDING_DEPLOYMENT=$azureOpenAIEmbeddingDeployment \
                 OPENAI_API_VERSION=$azureOpenAIApiVersion \
-                AZURE_AI_SEARCH_API_KEY=$azureSearchAdminKey AZURE_AI_SEARCH_ENDPOINT=$azureSearchServiceEndpoint \
-                AZURE_SEARCH_INDEX=$azureSearchIndex \
                 PYTHON_ENABLE_INIT_INDEXING=$valueone PYTHON_ISOLATE_WORKER_DEPENDENCIES=$valueone \
                 POSTGRESQL_SERVER=$postgresqlServerName POSTGRESQL_DATABASENAME=$postgresqlDbName \
                 POSTGRESQL_USER=$postgresqlDbUser POSTGRESQL_PASSWORD=$postgresqlDbPwd \
                 SSLMODE=$sslMode         
+
+    # AZURE_AI_SEARCH_API_KEY=$azureSearchAdminKey AZURE_AI_SEARCH_ENDPOINT=$azureSearchServiceEndpoint \
+    #             AZURE_SEARCH_INDEX=$azureSearchIndex \                

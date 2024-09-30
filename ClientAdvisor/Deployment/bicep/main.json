@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.28.1.47646",
-      "templateHash": "17938575438011927071"
+      "templateHash": "6913853272531769820"
     }
   },
   "parameters": {
@@ -1492,7 +1492,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.28.1.47646",
-              "templateHash": "4307519442711409663"
+              "templateHash": "15715094568303868857"
             }
           },
           "parameters": {
@@ -1516,7 +1516,7 @@
             {
               "type": "Microsoft.Resources/deploymentScripts",
               "apiVersion": "2020-10-01",
-              "name": "create_search_indexes",
+              "name": "create_data_scripts",
               "kind": "AzureCLI",
               "location": "[parameters('solutionLocation')]",
               "identity": {
@@ -1527,7 +1527,7 @@
               },
               "properties": {
                 "azCliVersion": "2.52.0",
-                "primaryScriptUri": "[format('{0}Deployment/scripts/run_create_index_scripts.sh', parameters('baseUrl'))]",
+                "primaryScriptUri": "[format('{0}Deployment/scripts/run_create_data_scripts.sh', parameters('baseUrl'))]",
                 "arguments": "[format('{0} {1}', parameters('baseUrl'), parameters('keyVaultName'))]",
                 "timeout": "PT1H",
                 "retentionInterval": "PT1H",
