@@ -103,7 +103,7 @@ resource configurations 'Microsoft.DBforPostgreSQL/flexibleServers/configuration
 
 
 output postgreSQLDbOutput object = {
-  postgreSQLServerName: serverName_resource.name
+  postgreSQLServerName: '${serverName_resource.name}.postgres.database.azure.com' 
   postgreSQLDatabaseName: 'postgres'
   postgreSQLDbUser: administratorLogin
   postgreSQLDbPwd: administratorLoginPassword

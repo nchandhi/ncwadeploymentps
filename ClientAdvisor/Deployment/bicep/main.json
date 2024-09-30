@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.28.1.47646",
-      "templateHash": "4046937436071691225"
+      "templateHash": "11772498286012452758"
     }
   },
   "parameters": {
@@ -474,7 +474,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.28.1.47646",
-              "templateHash": "16792506151753544249"
+              "templateHash": "6949199745272547341"
             }
           },
           "parameters": {
@@ -617,7 +617,7 @@
             "postgreSQLDbOutput": {
               "type": "object",
               "value": {
-                "postgreSQLServerName": "[parameters('serverName')]",
+                "postgreSQLServerName": "[format('{0}.postgres.database.azure.com', parameters('serverName'))]",
                 "postgreSQLDatabaseName": "postgres",
                 "postgreSQLDbUser": "[parameters('administratorLogin')]",
                 "postgreSQLDbPwd": "[parameters('administratorLoginPassword')]",
