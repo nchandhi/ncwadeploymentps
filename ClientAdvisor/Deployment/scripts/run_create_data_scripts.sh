@@ -5,13 +5,13 @@ echo "started the script"
 baseUrl="$1"
 keyvaultName="$2"
 requirementFile="requirements.txt"
-requirementFileUrl=${baseUrl}"Deployment/scripts/index_scripts/requirements.txt"
+requirementFileUrl=${baseUrl}"Deployment/scripts/data_scripts/requirements.txt"
 
 echo "Script Started"
 
 # Download the create_index and create table python files
-curl --output "create_tables.py" ${baseUrl}"Deployment/scripts/index_scripts/create_tables.py"
-curl --output "load_vectors.py" ${baseUrl}"Deployment/scripts/index_scripts/load_vectors.py"
+curl --output "create_tables.py" ${baseUrl}"Deployment/scripts/data_scripts/create_tables.py"
+curl --output "load_vectors.py" ${baseUrl}"Deployment/scripts/data_scripts/load_vectors.py"
 
 # RUN apt-get update
 # RUN apt-get install python3 python3-dev g++ unixodbc-dev unixodbc libpq-dev

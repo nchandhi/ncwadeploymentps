@@ -9,12 +9,8 @@ param solutionPrefix string
 @description('CosmosDB Location')
 param cosmosLocation string
 
-// @description('Fabric Workspace Id if you have one, else leave it empty. ')
-// param fabricWorkspaceId string
-
 var resourceGroupLocation = resourceGroup().location
 var resourceGroupName = resourceGroup().name
-// var subscriptionId  = subscription().subscriptionId
 
 var solutionLocation = resourceGroupLocation
 // var baseUrl = 'https://raw.githubusercontent.com/microsoft/Build-your-own-copilot-Solution-Accelerator/main/ClientAdvisor/'
@@ -189,8 +185,8 @@ module keyvaultModule 'deploy_keyvault.bicep' = {
   // dependsOn:[storageAccountModule,azOpenAI,azSearchService,PostgreSQLDBModule]
 }
 
-module createIndex 'deploy_index_scripts.bicep' = {
-  name : 'deploy_index_scripts'
+module createData 'deploy_data_scripts.bicep' = {
+  name : 'deploy_data_scripts'
   params:{
     solutionLocation: solutionLocation
     identity:managedIdentityModule.outputs.managedIdentityOutput.id
@@ -200,21 +196,7 @@ module createIndex 'deploy_index_scripts.bicep' = {
   dependsOn:[keyvaultModule]
 }
 
-// module createaihub 'deploy_aihub_scripts.bicep' = {
-//   name : 'deploy_aihub_scripts'
-//   params:{
-//     solutionLocation: solutionLocation
-//     identity:managedIdentityModule.outputs.managedIdentityOutput.id
-//     baseUrl:baseUrl
-//     keyVaultName:keyvaultModule.outputs.keyvaultOutput.name
-//     solutionName: solutionPrefix
-//     resourceGroupName:resourceGroupName
-//     subscriptionId:subscriptionId
-//   }
-//   dependsOn:[keyvaultModule]
-// }
-
-
+// ========== Deploy App Service ========== //
 module appserviceModule 'deploy_app_service.bicep' = {
   name: 'deploy_app_service'
   params: {
