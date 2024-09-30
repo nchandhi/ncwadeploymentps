@@ -25,13 +25,6 @@ param allowAzureIPsFirewall bool = true
 ])
 param version string = '16'
 
-// var firewallrules = [
-//   {
-//     Name: 'rule1'
-//     StartIpAddress: '0.0.0.0'
-//     EndIpAddress: '255.255.255.255'
-//   }
-// ]
 resource serverName_resource 'Microsoft.DBforPostgreSQL/flexibleServers@2021-06-01' = {
   name: serverName
   location: solutionLocation
@@ -78,6 +71,9 @@ resource firewall_all 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2
     startIpAddress: '0.0.0.0'
     endIpAddress: '255.255.255.255'
   }
+  dependsOn: [
+    serverName_resource
+  ]
 }
 
 resource firewall_azure 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2023-03-01-preview' = if (allowAzureIPsFirewall) {
@@ -87,6 +83,9 @@ resource firewall_azure 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules
     startIpAddress: '0.0.0.0'
     endIpAddress: '0.0.0.0'
   }
+  dependsOn: [
+    firewall_all
+  ]
 }
 
 resource configurations 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2023-03-01-preview' = {
