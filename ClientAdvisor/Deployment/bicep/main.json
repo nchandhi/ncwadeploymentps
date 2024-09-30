@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.28.1.47646",
-      "templateHash": "4879165676068391719"
+      "templateHash": "17859852233009903939"
     }
   },
   "parameters": {
@@ -305,7 +305,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.28.1.47646",
-              "templateHash": "540937752409858086"
+              "templateHash": "8480462538718719630"
             }
           },
           "parameters": {
@@ -376,7 +376,7 @@
           "resources": [
             {
               "type": "Microsoft.DBforPostgreSQL/flexibleServers",
-              "apiVersion": "2021-06-01",
+              "apiVersion": "2021-12-01",
               "name": "[parameters('serverName')]",
               "location": "[parameters('solutionLocation')]",
               "sku": {
@@ -406,7 +406,7 @@
             {
               "condition": "[parameters('allowAllIPsFirewall')]",
               "type": "Microsoft.DBforPostgreSQL/flexibleServers/firewallRules",
-              "apiVersion": "2023-03-01-preview",
+              "apiVersion": "2023-12-01-preview",
               "name": "[format('{0}/{1}', parameters('serverName'), 'allow-all-IPs')]",
               "properties": {
                 "startIpAddress": "0.0.0.0",
@@ -419,7 +419,7 @@
             {
               "condition": "[parameters('allowAzureIPsFirewall')]",
               "type": "Microsoft.DBforPostgreSQL/flexibleServers/firewallRules",
-              "apiVersion": "2023-03-01-preview",
+              "apiVersion": "2023-12-01-preview",
               "name": "[format('{0}/{1}', parameters('serverName'), 'allow-all-azure-internal-IPs')]",
               "properties": {
                 "startIpAddress": "0.0.0.0",
@@ -432,7 +432,7 @@
             },
             {
               "type": "Microsoft.DBforPostgreSQL/flexibleServers/configurations",
-              "apiVersion": "2023-03-01-preview",
+              "apiVersion": "2023-12-01-preview",
               "name": "[format('{0}/{1}', parameters('serverName'), 'azure.extensions')]",
               "properties": {
                 "value": "vector",

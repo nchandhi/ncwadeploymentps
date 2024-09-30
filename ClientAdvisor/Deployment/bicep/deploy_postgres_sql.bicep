@@ -25,7 +25,7 @@ param allowAzureIPsFirewall bool = true
 ])
 param version string = '16'
 
-resource serverName_resource 'Microsoft.DBforPostgreSQL/flexibleServers@2021-06-01' = {
+resource serverName_resource 'Microsoft.DBforPostgreSQL/flexibleServers@2021-12-01' = {
   name: serverName
   location: solutionLocation
   sku: {
@@ -64,7 +64,7 @@ resource serverName_resource 'Microsoft.DBforPostgreSQL/flexibleServers@2021-06-
 // }]
 
 
-resource firewall_all 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2023-03-01-preview' = if (allowAllIPsFirewall) {
+resource firewall_all 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2023-12-01-preview' = if (allowAllIPsFirewall) {
   parent: serverName_resource
   name: 'allow-all-IPs'
   properties: {
@@ -76,7 +76,7 @@ resource firewall_all 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2
   ]
 }
 
-resource firewall_azure 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2023-03-01-preview' = if (allowAzureIPsFirewall) {
+resource firewall_azure 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2023-12-01-preview' = if (allowAzureIPsFirewall) {
   parent: serverName_resource
   name: 'allow-all-azure-internal-IPs'
   properties: {
@@ -88,7 +88,7 @@ resource firewall_azure 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules
   ]
 }
 
-resource configurations 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2023-03-01-preview' = {
+resource configurations 'Microsoft.DBforPostgreSQL/flexibleServers/configurations@2023-12-01-preview' = {
   name: 'azure.extensions'
   parent: serverName_resource
   properties: {
