@@ -25,7 +25,7 @@ param allowAzureIPsFirewall bool = true
 ])
 param version string = '16'
 
-resource serverName_resource 'Microsoft.DBforPostgreSQL/flexibleServers@2021-12-01' = {
+resource serverName_resource 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-preview' = {
   name: serverName
   location: solutionLocation
   sku: {

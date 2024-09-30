@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.28.1.47646",
-      "templateHash": "17859852233009903939"
+      "templateHash": "17938575438011927071"
     }
   },
   "parameters": {
@@ -305,7 +305,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.28.1.47646",
-              "templateHash": "8480462538718719630"
+              "templateHash": "3434909423188274960"
             }
           },
           "parameters": {
@@ -376,7 +376,7 @@
           "resources": [
             {
               "type": "Microsoft.DBforPostgreSQL/flexibleServers",
-              "apiVersion": "2021-12-01",
+              "apiVersion": "2023-12-01-preview",
               "name": "[parameters('serverName')]",
               "location": "[parameters('solutionLocation')]",
               "sku": {
