@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.28.1.47646",
-      "templateHash": "18014764253692770142"
+      "templateHash": "858796612112877929"
     }
   },
   "parameters": {
@@ -1636,7 +1636,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.28.1.47646",
-              "templateHash": "2844249920208651263"
+              "templateHash": "16114262218488911942"
             }
           },
           "parameters": {
@@ -1698,90 +1698,6 @@
               "defaultValue": "[format('{0}-app-insights', parameters('solutionName'))]",
               "metadata": {
                 "description": "Name of Application Insights"
-              }
-            },
-            "AzureSearchService": {
-              "type": "string",
-              "defaultValue": "",
-              "metadata": {
-                "description": "Name of Azure Search Service"
-              }
-            },
-            "AzureSearchIndex": {
-              "type": "string",
-              "defaultValue": "",
-              "metadata": {
-                "description": "Name of Azure Search Index"
-              }
-            },
-            "AzureSearchKey": {
-              "type": "securestring",
-              "defaultValue": "",
-              "metadata": {
-                "description": "Azure Search Admin Key"
-              }
-            },
-            "AzureSearchUseSemanticSearch": {
-              "type": "string",
-              "defaultValue": "False",
-              "metadata": {
-                "description": "Use semantic search"
-              }
-            },
-            "AzureSearchSemanticSearchConfig": {
-              "type": "string",
-              "defaultValue": "default",
-              "metadata": {
-                "description": "Semantic search config"
-              }
-            },
-            "AzureSearchIndexIsPrechunked": {
-              "type": "string",
-              "defaultValue": "False",
-              "metadata": {
-                "description": "Is the index prechunked"
-              }
-            },
-            "AzureSearchTopK": {
-              "type": "string",
-              "defaultValue": "5",
-              "metadata": {
-                "description": "Top K results"
-              }
-            },
-            "AzureSearchEnableInDomain": {
-              "type": "string",
-              "defaultValue": "False",
-              "metadata": {
-                "description": "Enable in domain"
-              }
-            },
-            "AzureSearchContentColumns": {
-              "type": "string",
-              "defaultValue": "content",
-              "metadata": {
-                "description": "Content columns"
-              }
-            },
-            "AzureSearchFilenameColumn": {
-              "type": "string",
-              "defaultValue": "filename",
-              "metadata": {
-                "description": "Filename column"
-              }
-            },
-            "AzureSearchTitleColumn": {
-              "type": "string",
-              "defaultValue": "client_id",
-              "metadata": {
-                "description": "Title column"
-              }
-            },
-            "AzureSearchUrlColumn": {
-              "type": "string",
-              "defaultValue": "sourceurl",
-              "metadata": {
-                "description": "Url column"
               }
             },
             "AzureOpenAIResource": {

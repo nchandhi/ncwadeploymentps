@@ -28,42 +28,42 @@ param WebsiteName string = '${ solutionName }-app-service'
 @description('Name of Application Insights')
 param ApplicationInsightsName string = '${ solutionName }-app-insights'
 
-@description('Name of Azure Search Service')
-param AzureSearchService string = ''
+// @description('Name of Azure Search Service')
+// param AzureSearchService string = ''
 
-@description('Name of Azure Search Index')
-param AzureSearchIndex string = ''
+// @description('Name of Azure Search Index')
+// param AzureSearchIndex string = ''
 
-@description('Azure Search Admin Key')
-@secure()
-param AzureSearchKey string = ''
+// @description('Azure Search Admin Key')
+// @secure()
+// param AzureSearchKey string = ''
 
-@description('Use semantic search')
-param AzureSearchUseSemanticSearch string = 'False'
+// @description('Use semantic search')
+// param AzureSearchUseSemanticSearch string = 'False'
 
-@description('Semantic search config')
-param AzureSearchSemanticSearchConfig string = 'default'
+// @description('Semantic search config')
+// param AzureSearchSemanticSearchConfig string = 'default'
 
-@description('Is the index prechunked')
-param AzureSearchIndexIsPrechunked string = 'False'
+// @description('Is the index prechunked')
+// param AzureSearchIndexIsPrechunked string = 'False'
 
-@description('Top K results')
-param AzureSearchTopK string = '5'
+// @description('Top K results')
+// param AzureSearchTopK string = '5'
 
-@description('Enable in domain')
-param AzureSearchEnableInDomain string = 'False'
+// @description('Enable in domain')
+// param AzureSearchEnableInDomain string = 'False'
 
-@description('Content columns')
-param AzureSearchContentColumns string = 'content'
+// @description('Content columns')
+// param AzureSearchContentColumns string = 'content'
 
-@description('Filename column')
-param AzureSearchFilenameColumn string = 'filename'
+// @description('Filename column')
+// param AzureSearchFilenameColumn string = 'filename'
 
-@description('Title column')
-param AzureSearchTitleColumn string = 'client_id'
+// @description('Title column')
+// param AzureSearchTitleColumn string = 'client_id'
 
-@description('Url column')
-param AzureSearchUrlColumn string = 'sourceurl'
+// @description('Url column')
+// param AzureSearchUrlColumn string = 'sourceurl'
 
 @description('Name of Azure OpenAI Resource')
 param AzureOpenAIResource string
