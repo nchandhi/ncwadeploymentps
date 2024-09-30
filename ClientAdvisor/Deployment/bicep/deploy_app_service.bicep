@@ -102,21 +102,21 @@ param AzureOpenAIApiVersion string = '2024-02-15-preview'
 @description('Whether or not to stream responses from Azure OpenAI')
 param AzureOpenAIStream string = 'True'
 
-@description('Azure Search Query Type')
-@allowed(
-  ['simple', 'semantic', 'vector', 'vectorSimpleHybrid', 'vectorSemanticHybrid']
-)
-param AzureSearchQueryType string = 'simple'
+// @description('Azure Search Query Type')
+// @allowed(
+//   ['simple', 'semantic', 'vector', 'vectorSimpleHybrid', 'vectorSemanticHybrid']
+// )
+// param AzureSearchQueryType string = 'simple'
 
-@description('Azure Search Vector Fields')
-param AzureSearchVectorFields string = 'contentVector'
+// @description('Azure Search Vector Fields')
+// param AzureSearchVectorFields string = 'contentVector'
 
-@description('Azure Search Permitted Groups Field')
-param AzureSearchPermittedGroupsField string = ''
+// @description('Azure Search Permitted Groups Field')
+// param AzureSearchPermittedGroupsField string = ''
 
-@description('Azure Search Strictness')
-@allowed(['1', '2', '3', '4', '5'])
-param AzureSearchStrictness string = '3'
+// @description('Azure Search Strictness')
+// @allowed(['1', '2', '3', '4', '5'])
+// param AzureSearchStrictness string = '3'
 
 @description('Azure OpenAI Embedding Deployment Name')
 param AzureOpenAIEmbeddingName string = ''
@@ -149,21 +149,21 @@ param STREAMING_AZUREFUNCTION_ENDPOINT string = ''
 // @secure()
 // param SQLDB_PASSWORD string = ''
 
-@description('Azure Cosmos DB Account')
-param AZURE_COSMOSDB_ACCOUNT string = ''
+// @description('Azure Cosmos DB Account')
+// param AZURE_COSMOSDB_ACCOUNT string = ''
 
-@description('Azure Cosmos DB Account Key')
-@secure()
-param AZURE_COSMOSDB_ACCOUNT_KEY string = ''
+// @description('Azure Cosmos DB Account Key')
+// @secure()
+// param AZURE_COSMOSDB_ACCOUNT_KEY string = ''
 
-@description('Azure Cosmos DB Conversations Container')
-param AZURE_COSMOSDB_CONVERSATIONS_CONTAINER string = ''
+// @description('Azure Cosmos DB Conversations Container')
+// param AZURE_COSMOSDB_CONVERSATIONS_CONTAINER string = ''
 
-@description('Azure Cosmos DB Database')
-param AZURE_COSMOSDB_DATABASE string = ''
+// @description('Azure Cosmos DB Database')
+// param AZURE_COSMOSDB_DATABASE string = ''
 
-@description('Enable feedback in Cosmos DB')
-param AZURE_COSMOSDB_ENABLE_FEEDBACK string = 'True'
+// @description('Enable feedback in Cosmos DB')
+// param AZURE_COSMOSDB_ENABLE_FEEDBACK string = 'True'
 
 @description('PostgreSQL Server Name')
 param POSTGRESQL_SERVER string = ''
@@ -215,54 +215,54 @@ resource Website 'Microsoft.Web/sites@2020-06-01' = {
           name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
           value: reference(ApplicationInsights.id, '2015-05-01').InstrumentationKey
         }
-        {
-          name: 'AZURE_SEARCH_SERVICE'
-          value: AzureSearchService
-        }
-        {
-          name: 'AZURE_SEARCH_INDEX'
-          value: AzureSearchIndex
-        }
-        {
-          name: 'AZURE_SEARCH_KEY'
-          value: AzureSearchKey
-        }
-        {
-          name: 'AZURE_SEARCH_USE_SEMANTIC_SEARCH'
-          value: AzureSearchUseSemanticSearch
-        }
-        {
-          name: 'AZURE_SEARCH_SEMANTIC_SEARCH_CONFIG'
-          value: AzureSearchSemanticSearchConfig
-        }
-        {
-          name: 'AZURE_SEARCH_INDEX_IS_PRECHUNKED'
-          value: AzureSearchIndexIsPrechunked
-        }
-        {
-          name: 'AZURE_SEARCH_TOP_K'
-          value: AzureSearchTopK
-        }
-        {
-          name: 'AZURE_SEARCH_ENABLE_IN_DOMAIN'
-          value: AzureSearchEnableInDomain
-        }
-        {
-          name: 'AZURE_SEARCH_CONTENT_COLUMNS'
-          value: AzureSearchContentColumns
-        }
-        {
-          name: 'AZURE_SEARCH_FILENAME_COLUMN'
-          value: AzureSearchFilenameColumn
-        }
-        {
-          name: 'AZURE_SEARCH_TITLE_COLUMN'
-          value: AzureSearchTitleColumn
-        }
-        {
-          name: 'AZURE_SEARCH_URL_COLUMN'
-          value: AzureSearchUrlColumn
-        }
+        // {
+        //   name: 'AZURE_SEARCH_SERVICE'
+        //   value: AzureSearchService
+        // }
+        // {
+        //   name: 'AZURE_SEARCH_INDEX'
+        //   value: AzureSearchIndex
+        // }
+        // {
+        //   name: 'AZURE_SEARCH_KEY'
+        //   value: AzureSearchKey
+        // }
+        // {
+        //   name: 'AZURE_SEARCH_USE_SEMANTIC_SEARCH'
+        //   value: AzureSearchUseSemanticSearch
+        // }
+        // {
+        //   name: 'AZURE_SEARCH_SEMANTIC_SEARCH_CONFIG'
+        //   value: AzureSearchSemanticSearchConfig
+        // }
+        // {
+        //   name: 'AZURE_SEARCH_INDEX_IS_PRECHUNKED'
+        //   value: AzureSearchIndexIsPrechunked
+        // }
+        // {
+        //   name: 'AZURE_SEARCH_TOP_K'
+        //   value: AzureSearchTopK
+        // }
+        // {
+        //   name: 'AZURE_SEARCH_ENABLE_IN_DOMAIN'
+        //   value: AzureSearchEnableInDomain
+        // }
+        // {
+        //   name: 'AZURE_SEARCH_CONTENT_COLUMNS'
+        //   value: AzureSearchContentColumns
+        // }
+        // {
+        //   name: 'AZURE_SEARCH_FILENAME_COLUMN'
+        //   value: AzureSearchFilenameColumn
+        // }
+        // {
+        //   name: 'AZURE_SEARCH_TITLE_COLUMN'
+        //   value: AzureSearchTitleColumn
+        // }
+        // {
+        //   name: 'AZURE_SEARCH_URL_COLUMN'
+        //   value: AzureSearchUrlColumn
+        // }
         {
           name: 'AZURE_OPENAI_RESOURCE'
           value: AzureOpenAIResource
@@ -311,22 +311,22 @@ resource Website 'Microsoft.Web/sites@2020-06-01' = {
           name: 'AZURE_OPENAI_STREAM'
           value: AzureOpenAIStream
         }
-        {
-          name: 'AZURE_SEARCH_QUERY_TYPE'
-          value: AzureSearchQueryType
-        }
-        {
-          name: 'AZURE_SEARCH_VECTOR_COLUMNS'
-          value: AzureSearchVectorFields
-        }
-        {
-          name: 'AZURE_SEARCH_PERMITTED_GROUPS_COLUMN'
-          value: AzureSearchPermittedGroupsField
-        }
-        {
-          name: 'AZURE_SEARCH_STRICTNESS'
-          value: AzureSearchStrictness
-        }
+        // {
+        //   name: 'AZURE_SEARCH_QUERY_TYPE'
+        //   value: AzureSearchQueryType
+        // }
+        // {
+        //   name: 'AZURE_SEARCH_VECTOR_COLUMNS'
+        //   value: AzureSearchVectorFields
+        // }
+        // {
+        //   name: 'AZURE_SEARCH_PERMITTED_GROUPS_COLUMN'
+        //   value: AzureSearchPermittedGroupsField
+        // }
+        // {
+        //   name: 'AZURE_SEARCH_STRICTNESS'
+        //   value: AzureSearchStrictness
+        // }
         {
           name: 'AZURE_OPENAI_EMBEDDING_NAME'
           value: AzureOpenAIEmbeddingName
@@ -387,21 +387,21 @@ resource Website 'Microsoft.Web/sites@2020-06-01' = {
           value: STREAMING_AZUREFUNCTION_ENDPOINT
         }
 
-        {name: 'AZURE_COSMOSDB_ACCOUNT'
-          value: AZURE_COSMOSDB_ACCOUNT
-        }
-        {name: 'AZURE_COSMOSDB_ACCOUNT_KEY'
-          value: AZURE_COSMOSDB_ACCOUNT_KEY
-        }
-        {name: 'AZURE_COSMOSDB_CONVERSATIONS_CONTAINER'
-          value: AZURE_COSMOSDB_CONVERSATIONS_CONTAINER
-        }
-        {name: 'AZURE_COSMOSDB_DATABASE'
-          value: AZURE_COSMOSDB_DATABASE
-        }
-        {name: 'AZURE_COSMOSDB_ENABLE_FEEDBACK'
-          value: AZURE_COSMOSDB_ENABLE_FEEDBACK
-        }
+        // {name: 'AZURE_COSMOSDB_ACCOUNT'
+        //   value: AZURE_COSMOSDB_ACCOUNT
+        // }
+        // {name: 'AZURE_COSMOSDB_ACCOUNT_KEY'
+        //   value: AZURE_COSMOSDB_ACCOUNT_KEY
+        // }
+        // {name: 'AZURE_COSMOSDB_CONVERSATIONS_CONTAINER'
+        //   value: AZURE_COSMOSDB_CONVERSATIONS_CONTAINER
+        // }
+        // {name: 'AZURE_COSMOSDB_DATABASE'
+        //   value: AZURE_COSMOSDB_DATABASE
+        // }
+        // {name: 'AZURE_COSMOSDB_ENABLE_FEEDBACK'
+        //   value: AZURE_COSMOSDB_ENABLE_FEEDBACK
+        // }
         {name: 'VITE_POWERBI_EMBED_URL'
           value: VITE_POWERBI_EMBED_URL
         }

@@ -30,15 +30,15 @@ module managedIdentityModule 'deploy_managed_identity.bicep' = {
   scope: resourceGroup(resourceGroup().name)
 }
 
-module cosmosDBModule 'deploy_cosmos_db.bicep' = {
-  name: 'deploy_cosmos_db'
-  params: {
-    solutionName: solutionPrefix
-    solutionLocation: cosmosLocation
-    identity:managedIdentityModule.outputs.managedIdentityOutput.objectId
-  }
-  scope: resourceGroup(resourceGroup().name)
-}
+// module cosmosDBModule 'deploy_cosmos_db.bicep' = {
+//   name: 'deploy_cosmos_db'
+//   params: {
+//     solutionName: solutionPrefix
+//     solutionLocation: cosmosLocation
+//     identity:managedIdentityModule.outputs.managedIdentityOutput.objectId
+//   }
+//   scope: resourceGroup(resourceGroup().name)
+// }
 
 
 // ========== Storage Account Module ========== //
@@ -83,14 +83,14 @@ module azAIMultiServiceAccount 'deploy_azure_ai_service.bicep' = {
   }
 } 
 
-// ========== Search service ========== //
-module azSearchService 'deploy_ai_search_service.bicep' = {
-  name: 'deploy_ai_search_service'
-  params: {
-    solutionName: solutionPrefix
-    solutionLocation: solutionLocation
-  }
-} 
+// // ========== Search service ========== //
+// module azSearchService 'deploy_ai_search_service.bicep' = {
+//   name: 'deploy_ai_search_service'
+//   params: {
+//     solutionName: solutionPrefix
+//     solutionLocation: solutionLocation
+//   }
+// } 
 
 // ========== Azure OpenAI ========== //
 module azOpenAI 'deploy_azure_open_ai.bicep' = {
@@ -123,9 +123,9 @@ module azureFunctions 'deploy_azure_function_script.bicep' = {
     azureOpenAIApiKey:azOpenAI.outputs.openAIOutput.openAPIKey
     azureOpenAIApiVersion:'2024-02-15-preview'
     azureOpenAIEndpoint:azOpenAI.outputs.openAIOutput.openAPIEndpoint
-    azureSearchAdminKey:azSearchService.outputs.searchServiceOutput.searchServiceAdminKey
-    azureSearchServiceEndpoint:azSearchService.outputs.searchServiceOutput.searchServiceEndpoint
-    azureSearchIndex:'transcripts_index'
+    // azureSearchAdminKey:azSearchService.outputs.searchServiceOutput.searchServiceAdminKey
+    // azureSearchServiceEndpoint:azSearchService.outputs.searchServiceOutput.searchServiceEndpoint
+    // azureSearchIndex:'transcripts_index'
     // sqlServerName:sqlDBModule.outputs.sqlDbOutput.sqlServerName
     // sqlDbName:sqlDBModule.outputs.sqlDbOutput.sqlDbName
     // sqlDbUser:sqlDBModule.outputs.sqlDbOutput.sqlDbUser
@@ -166,10 +166,10 @@ module keyvaultModule 'deploy_keyvault.bicep' = {
     azureOpenAIApiKey:azOpenAI.outputs.openAIOutput.openAPIKey
     azureOpenAIApiVersion:'2024-02-15-preview'
     azureOpenAIEndpoint:azOpenAI.outputs.openAIOutput.openAPIEndpoint
-    azureSearchAdminKey:azSearchService.outputs.searchServiceOutput.searchServiceAdminKey
-    azureSearchServiceEndpoint:azSearchService.outputs.searchServiceOutput.searchServiceEndpoint
-    azureSearchServiceName:azSearchService.outputs.searchServiceOutput.searchServiceName
-    azureSearchIndex:'transcripts_index'
+    // azureSearchAdminKey:azSearchService.outputs.searchServiceOutput.searchServiceAdminKey
+    // azureSearchServiceEndpoint:azSearchService.outputs.searchServiceOutput.searchServiceEndpoint
+    // azureSearchServiceName:azSearchService.outputs.searchServiceOutput.searchServiceName
+    // azureSearchIndex:'transcripts_index'
     cogServiceEndpoint:azAIMultiServiceAccount.outputs.cogSearchOutput.cogServiceEndpoint
     cogServiceName:azAIMultiServiceAccount.outputs.cogSearchOutput.cogServiceName
     cogServiceKey:azAIMultiServiceAccount.outputs.cogSearchOutput.cogServiceKey
@@ -185,7 +185,8 @@ module keyvaultModule 'deploy_keyvault.bicep' = {
     enableSoftDelete:false
   }
   scope: resourceGroup(resourceGroup().name)
-  dependsOn:[storageAccountModule,azOpenAI,azSearchService,PostgreSQLDBModule]
+  dependsOn:[storageAccountModule,azOpenAI,PostgreSQLDBModule]
+  // dependsOn:[storageAccountModule,azOpenAI,azSearchService,PostgreSQLDBModule]
 }
 
 module createIndex 'deploy_index_scripts.bicep' = {
@@ -220,17 +221,17 @@ module appserviceModule 'deploy_app_service.bicep' = {
     identity:managedIdentityModule.outputs.managedIdentityOutput.id
     solutionName: solutionPrefix
     solutionLocation: solutionLocation
-    AzureSearchService:azSearchService.outputs.searchServiceOutput.searchServiceName
-    AzureSearchIndex:'transcripts_index'
-    AzureSearchKey:azSearchService.outputs.searchServiceOutput.searchServiceAdminKey
-    AzureSearchUseSemanticSearch:'True'
-    AzureSearchSemanticSearchConfig:'my-semantic-config'
-    AzureSearchIndexIsPrechunked:'False'
-    AzureSearchTopK:'5'
-    AzureSearchContentColumns:'content'
-    AzureSearchFilenameColumn:'chunk_id'
-    AzureSearchTitleColumn:'client_id'
-    AzureSearchUrlColumn:'sourceurl'
+    // AzureSearchService:azSearchService.outputs.searchServiceOutput.searchServiceName
+    // AzureSearchIndex:'transcripts_index'
+    // AzureSearchKey:azSearchService.outputs.searchServiceOutput.searchServiceAdminKey
+    // AzureSearchUseSemanticSearch:'True'
+    // AzureSearchSemanticSearchConfig:'my-semantic-config'
+    // AzureSearchIndexIsPrechunked:'False'
+    // AzureSearchTopK:'5'
+    // AzureSearchContentColumns:'content'
+    // AzureSearchFilenameColumn:'chunk_id'
+    // AzureSearchTitleColumn:'client_id'
+    // AzureSearchUrlColumn:'sourceurl'
     AzureOpenAIResource:azOpenAI.outputs.openAIOutput.openAPIEndpoint
     AzureOpenAIEndpoint:azOpenAI.outputs.openAIOutput.openAPIEndpoint
     AzureOpenAIModel:'gpt-4'
@@ -243,10 +244,10 @@ module appserviceModule 'deploy_app_service.bicep' = {
     AzureOpenAISystemMessage:'''You are a helpful Wealth Advisor assistant''' 
     AzureOpenAIApiVersion:'2024-02-15-preview'
     AzureOpenAIStream:'True'
-    AzureSearchQueryType:'simple'
-    AzureSearchVectorFields:'contentVector'
-    AzureSearchPermittedGroupsField:''
-    AzureSearchStrictness:'3'
+    // AzureSearchQueryType:'simple'
+    // AzureSearchVectorFields:'contentVector'
+    // AzureSearchPermittedGroupsField:''
+    // AzureSearchStrictness:'3'
     AzureOpenAIEmbeddingName:'text-embedding-ada-002'
     AzureOpenAIEmbeddingkey:azOpenAI.outputs.openAIOutput.openAPIKey
     AzureOpenAIEmbeddingEndpoint:azOpenAI.outputs.openAIOutput.openAPIEndpoint
@@ -260,13 +261,14 @@ module appserviceModule 'deploy_app_service.bicep' = {
     POSTGRESQL_DATABASE:PostgreSQLDBModule.outputs.postgreSQLDbOutput.postgreSQLDatabaseName
     POSTGRESQL_USERNAME:PostgreSQLDBModule.outputs.postgreSQLDbOutput.postgresqlDbUser
     POSTGRESQL_PASSWORD:PostgreSQLDBModule.outputs.postgreSQLDbOutput.postgresqlDbPwd
-    AZURE_COSMOSDB_ACCOUNT: cosmosDBModule.outputs.cosmosOutput.cosmosAccountName
-    AZURE_COSMOSDB_ACCOUNT_KEY: cosmosDBModule.outputs.cosmosOutput.cosmosAccountKey
-    AZURE_COSMOSDB_CONVERSATIONS_CONTAINER: cosmosDBModule.outputs.cosmosOutput.cosmosContainerName
-    AZURE_COSMOSDB_DATABASE: cosmosDBModule.outputs.cosmosOutput.cosmosDatabaseName
-    AZURE_COSMOSDB_ENABLE_FEEDBACK: 'True'
+    // AZURE_COSMOSDB_ACCOUNT: cosmosDBModule.outputs.cosmosOutput.cosmosAccountName
+    // AZURE_COSMOSDB_ACCOUNT_KEY: cosmosDBModule.outputs.cosmosOutput.cosmosAccountKey
+    // AZURE_COSMOSDB_CONVERSATIONS_CONTAINER: cosmosDBModule.outputs.cosmosOutput.cosmosContainerName
+    // AZURE_COSMOSDB_DATABASE: cosmosDBModule.outputs.cosmosOutput.cosmosDatabaseName
+    // AZURE_COSMOSDB_ENABLE_FEEDBACK: 'True'
     VITE_POWERBI_EMBED_URL: 'TBD'
   }
   scope: resourceGroup(resourceGroup().name)
-  dependsOn:[azOpenAI,azAIMultiServiceAccount,azSearchService,PostgreSQLDBModule,azureFunctionURL,cosmosDBModule]
+  dependsOn:[azOpenAI,azAIMultiServiceAccount,PostgreSQLDBModule,azureFunctionURL]
+  // dependsOn:[azOpenAI,azAIMultiServiceAccount,azSearchService,PostgreSQLDBModule,azureFunctionURL,cosmosDBModule]
 }

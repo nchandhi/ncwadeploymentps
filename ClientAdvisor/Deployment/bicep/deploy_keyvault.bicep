@@ -76,10 +76,10 @@ param azureOpenAIApiKey string
 param azureOpenAIApiVersion string
 param azureOpenAIEndpoint string
 @secure()
-param azureSearchAdminKey string
-param azureSearchServiceEndpoint string
-param azureSearchServiceName string
-param azureSearchIndex string
+// param azureSearchAdminKey string
+// param azureSearchServiceEndpoint string
+// param azureSearchServiceName string
+// param azureSearchIndex string
 param cogServiceEndpoint string
 @secure()
 param cogServiceKey string
@@ -241,37 +241,37 @@ resource azureOpenAIEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-
   }
 }
 
-resource azureSearchAdminKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
-  parent: keyVault
-  name: 'AZURE-SEARCH-KEY'
-  properties: {
-    value: azureSearchAdminKey
-  }
-}
+// resource azureSearchAdminKeyEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+//   parent: keyVault
+//   name: 'AZURE-SEARCH-KEY'
+//   properties: {
+//     value: azureSearchAdminKey
+//   }
+// }
 
-resource azureSearchServiceEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
-  parent: keyVault
-  name: 'AZURE-SEARCH-ENDPOINT'
-  properties: {
-    value: azureSearchServiceEndpoint
-  }
-}
+// resource azureSearchServiceEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+//   parent: keyVault
+//   name: 'AZURE-SEARCH-ENDPOINT'
+//   properties: {
+//     value: azureSearchServiceEndpoint
+//   }
+// }
 
-resource azureSearchServiceEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
-  parent: keyVault
-  name: 'AZURE-SEARCH-SERVICE'
-  properties: {
-    value: azureSearchServiceName
-  }
-}
+// resource azureSearchServiceEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+//   parent: keyVault
+//   name: 'AZURE-SEARCH-SERVICE'
+//   properties: {
+//     value: azureSearchServiceName
+//   }
+// }
 
-resource azureSearchIndexEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
-  parent: keyVault
-  name: 'AZURE-SEARCH-INDEX'
-  properties: {
-    value: azureSearchIndex
-  }
-}
+// resource azureSearchIndexEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+//   parent: keyVault
+//   name: 'AZURE-SEARCH-INDEX'
+//   properties: {
+//     value: azureSearchIndex
+//   }
+// }
 
 resource cogServiceEndpointEntry 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
   parent: keyVault
