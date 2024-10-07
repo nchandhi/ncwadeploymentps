@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.28.1.47646",
-      "templateHash": "6913853272531769820"
+      "templateHash": "17230343047369307805"
     }
   },
   "parameters": {
@@ -1636,7 +1636,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.28.1.47646",
-              "templateHash": "16114262218488911942"
+              "templateHash": "2618132802434171143"
             }
           },
           "parameters": {
@@ -1860,7 +1860,7 @@
             }
           },
           "variables": {
-            "WebAppImageName": "DOCKER|bycwacontainerreg.azurecr.io/byc-wa-app:latest"
+            "WebAppImageName": "DOCKER|bycwacontainerregps.azurecr.io/byc-wa-app-ps:latest"
           },
           "resources": [
             {
