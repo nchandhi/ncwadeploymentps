@@ -1,27 +1,21 @@
-import azure.functions as func
-import openai
-from azurefunctions.extensions.http.fastapi import Request, StreamingResponse
 import asyncio
 import os
-
+import urllib.parse
 from typing import Annotated
 
-from semantic_kernel.connectors.ai.function_call_behavior import FunctionCallBehavior
-from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion, OpenAIChatCompletion
-from semantic_kernel.connectors.ai.open_ai.prompt_execution_settings.open_ai_prompt_execution_settings import (
-    OpenAIChatPromptExecutionSettings,
-)
-from semantic_kernel.contents.chat_history import ChatHistory
-from semantic_kernel.contents.function_call_content import FunctionCallContent
-from semantic_kernel.core_plugins.time_plugin import TimePlugin
-from semantic_kernel.functions.kernel_arguments import KernelArguments
-from semantic_kernel.functions.kernel_function_decorator import kernel_function
-from semantic_kernel.kernel import Kernel
-import pymssql
-import psycopg2
-import urllib.parse
+import azure.functions as func
+from azurefunctions.extensions.http.fastapi import Request, StreamingResponse
+import openai
 from pgvector.psycopg2 import register_vector
+import psycopg2
 import numpy as np
+
+from semantic_kernel import Kernel
+from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
+from semantic_kernel.connectors.ai.open_ai.prompt_execution_settings.open_ai_prompt_execution_settings import OpenAIChatPromptExecutionSettings
+from semantic_kernel.prompt_template import InputVariable, PromptTemplateConfig
+from semantic_kernel.connectors.ai.function_call_behavior import FunctionCallBehavior
+from semantic_kernel.functions.kernel_function_decorator import kernel_function
 
 # Azure Function App
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)

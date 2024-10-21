@@ -4,7 +4,7 @@
 
 azure-functions
 azurefunctions-extensions-http-fastapi==1.0.0b1
-openai==1.6.1
-semantic_kernel==1.0.4
+openai
+semantic_kernel
 psycopg2-binary
 pgvector

@@ -216,9 +216,9 @@ module appserviceModule 'deploy_app_service.bicep' = {
     // AzureSearchUrlColumn:'sourceurl'
     AzureOpenAIResource:azOpenAI.outputs.openAIOutput.openAPIEndpoint
     AzureOpenAIEndpoint:azOpenAI.outputs.openAIOutput.openAPIEndpoint
-    AzureOpenAIModel:'gpt-4'
+    AzureOpenAIModel:'gpt-4o'
     AzureOpenAIKey:azOpenAI.outputs.openAIOutput.openAPIKey
-    AzureOpenAIModelName:'gpt-4'
+    AzureOpenAIModelName:'gpt-4o'
     AzureOpenAITemperature:'0'
     AzureOpenAITopP:'1'
     AzureOpenAIMaxTokens:'1000'
