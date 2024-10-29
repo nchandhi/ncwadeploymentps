@@ -18,7 +18,7 @@ const groupByMonth = (entries: Conversation[]) => {
   const currentDate = new Date()
 
   entries.forEach(entry => {
-    const date = new Date(entry.date)
+    const date = new Date(entry.messages[0].date);
     const daysDifference = (currentDate.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
     const monthYear = date.toLocaleString('default', { month: 'long', year: 'numeric' })
     const existingGroup = groups.find(group => group.month === monthYear)
