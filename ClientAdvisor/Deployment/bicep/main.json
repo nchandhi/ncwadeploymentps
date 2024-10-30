@@ -16,12 +16,6 @@
       "metadata": {
         "description": "Prefix Name"
       }
-    },
-    "cosmosLocation": {
-      "type": "string",
-      "metadata": {
-        "description": "CosmosDB Location"
-      }
     }
   },
   "variables": {
