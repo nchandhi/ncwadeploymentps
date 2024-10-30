@@ -64,7 +64,7 @@ module PostgreSQLDBModule 'deploy_postgres_sql.bicep' = {
   name: 'deploy_postgres_sql'
   params: {
     solutionName: solutionPrefix
-    solutionLocation: solutionLocation
+    solutionLocation: 'eastus2'
     managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
   }
   scope: resourceGroup(resourceGroup().name)
@@ -93,7 +93,7 @@ module azOpenAI 'deploy_azure_open_ai.bicep' = {
   name: 'deploy_azure_open_ai'
   params: {
     solutionName: solutionPrefix
-    solutionLocation: solutionLocation
+    solutionLocation: 'eastus2'
   }
 }
 
