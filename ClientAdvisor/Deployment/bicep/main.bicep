@@ -6,15 +6,15 @@ targetScope = 'resourceGroup'
 @description('Prefix Name')
 param solutionPrefix string
 
-@description('CosmosDB Location')
-param cosmosLocation string
+// @description('CosmosDB Location')
+// param cosmosLocation string
 
 var resourceGroupLocation = resourceGroup().location
 var resourceGroupName = resourceGroup().name
 
 var solutionLocation = resourceGroupLocation
 // var baseUrl = 'https://raw.githubusercontent.com/microsoft/Build-your-own-copilot-Solution-Accelerator/main/ClientAdvisor/'
-var baseUrl = 'https://raw.githubusercontent.com/nchandhi/ncwadeploymentps/main/ClientAdvisor/'
+var baseUrl = 'https://raw.githubusercontent.com/nchandhi/ncwadeploymentps/postgresSqlChanges/ClientAdvisor/'
 
 // ========== Managed Identity ========== //
 module managedIdentityModule 'deploy_managed_identity.bicep' = {
@@ -64,7 +64,7 @@ module PostgreSQLDBModule 'deploy_postgres_sql.bicep' = {
   name: 'deploy_postgres_sql'
   params: {
     solutionName: solutionPrefix
-    solutionLocation: cosmosLocation
+    solutionLocation: solutionLocation
     managedIdentityObjectId:managedIdentityModule.outputs.managedIdentityOutput.objectId
   }
   scope: resourceGroup(resourceGroup().name)
@@ -93,7 +93,7 @@ module azOpenAI 'deploy_azure_open_ai.bicep' = {
   name: 'deploy_azure_open_ai'
   params: {
     solutionName: solutionPrefix
-    solutionLocation: cosmosLocation
+    solutionLocation: solutionLocation
   }
 }
 

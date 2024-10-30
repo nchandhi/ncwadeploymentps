@@ -2,10 +2,12 @@ import copy
 import json
 import os
 import logging
+import pprint
 import uuid
 from dotenv import load_dotenv
 import httpx
 import time
+import datetime
 import requests
 import pymssql
 from types import SimpleNamespace
@@ -24,7 +26,7 @@ from quart import (
 from openai import AsyncAzureOpenAI
 from azure.identity.aio import DefaultAzureCredential, get_bearer_token_provider
 from backend.auth.auth_utils import get_authenticated_user_details, get_tenantid
-from backend.history.cosmosdbservice import CosmosConversationClient
+from backend.history.postgresdbservice import PostgresConversationClient
 # from flask import Flask
 # from flask_cors import CORS
 import secrets
@@ -296,6 +298,7 @@ frontend_settings = {
 MS_DEFENDER_ENABLED = os.environ.get("MS_DEFENDER_ENABLED", "false").lower() == "true"
 
 VITE_POWERBI_EMBED_URL = os.environ.get("VITE_POWERBI_EMBED_URL")
+POSTGRES_DSN = os.environ.get("POSTGRES_DSN")
 
 def should_use_data():
     global DATASOURCE_TYPE
@@ -392,34 +395,23 @@ def init_openai_client(use_data=SHOULD_USE_DATA):
         raise e
 
 
-def init_cosmosdb_client():
-    cosmos_conversation_client = None
+async def init_postgres_client():
+    postgres_conversation_client = None
     if CHAT_HISTORY_ENABLED:
         try:
-            cosmos_endpoint = (
-                f"https://{AZURE_COSMOSDB_ACCOUNT}.documents.azure.com:443/"
+            postgres_conversation_client = PostgresConversationClient(
+                dsn=POSTGRES_DSN,
+                enable_message_feedback=AZURE_COSMOSDB_ENABLE_FEEDBACK
             )
-
-            if not AZURE_COSMOSDB_ACCOUNT_KEY:
-                credential = DefaultAzureCredential()
-            else:
-                credential = AZURE_COSMOSDB_ACCOUNT_KEY
-
-            cosmos_conversation_client = CosmosConversationClient(
-                cosmosdb_endpoint=cosmos_endpoint,
-                credential=credential,
-                database_name=AZURE_COSMOSDB_DATABASE,
-                container_name=AZURE_COSMOSDB_CONVERSATIONS_CONTAINER,
-                enable_message_feedback=AZURE_COSMOSDB_ENABLE_FEEDBACK,
-            )
+            await postgres_conversation_client.connect()
         except Exception as e:
-            logging.exception("Exception in CosmosDB initialization", e)
-            cosmos_conversation_client = None
+            logging.exception("Exception in PostgreSQL initialization", e)
+            postgres_conversation_client = None
             raise e
     else:
-        logging.debug("CosmosDB not configured")
+        logging.debug("PostgreSQL not configured")
 
-    return cosmos_conversation_client
+    return postgres_conversation_client
 
 
 def get_configured_data_source():
@@ -960,6 +952,16 @@ async def complete_chat_request(request_body, request_headers):
 
         return response
 
+def datetime_serializer(obj):
+    if isinstance(obj, (datetime.datetime, datetime.date)):
+        return obj.isoformat()
+    elif isinstance(obj, uuid.UUID):
+        return str(obj)
+    # Provide more context for debugging
+    print(f"Object type {type(obj)} is not serializable")
+    raise TypeError("Type not serializable")
+
+
 async def stream_chat_request(request_body, request_headers):
     if USE_AZUREFUNCTION:
         history_metadata = request_body.get("history_metadata", {})
@@ -1007,7 +1009,17 @@ async def stream_chat_request(request_body, request_headers):
                             "role": "assistant",
                             "content": deltaText
                         }
-                        completionChunk2 = json.loads(json.dumps(completionChunk1), object_hook=lambda d: SimpleNamespace(**d))
+                        # Print data structure before serialization
+                        pprint.pprint(completionChunk1)
+
+                        # Convert to JSON string with datetime serialization
+                        try:
+                            completionChunk1_json = json.dumps(completionChunk1, default=datetime_serializer)
+                        except TypeError as e:
+                            print(f"Serialization error: {e}")
+                            raise
+
+                        completionChunk2 = json.loads(completionChunk1_json, object_hook=lambda d: SimpleNamespace(**d))
                         yield format_stream_response(completionChunk2, history_metadata, apim_request_id)
 
         return generate()
@@ -1073,27 +1085,27 @@ async def add_conversation():
     conversation_id = request_json.get("conversation_id", None)
 
     try:
-        # make sure cosmos is configured
-        cosmos_conversation_client = init_cosmosdb_client()
-        if not cosmos_conversation_client:
-            raise Exception("CosmosDB is not configured or not working")
+        # make sure Postgres is configured
+        postgres_conversation_client = await init_postgres_client()
+        if not postgres_conversation_client:
+            raise Exception("Postgres Database is not configured or not working")
 
         # check for the conversation_id, if the conversation is not set, we will create a new one
         history_metadata = {}
         if not conversation_id:
             title = await generate_title(request_json["messages"])
-            conversation_dict = await cosmos_conversation_client.create_conversation(
+            conversation_dict = await postgres_conversation_client.create_conversation(
                 user_id=user_id, title=title
             )
             conversation_id = conversation_dict["id"]
             history_metadata["title"] = title
-            history_metadata["date"] = conversation_dict["createdAt"]
+            history_metadata["date"] = conversation_dict["created_at"]
 
         ## Format the incoming message object in the "chat/completions" messages format
-        ## then write it to the conversation history in cosmos
+        ## then write it to the conversation history in Postgres
         messages = request_json["messages"]
         if len(messages) > 0 and messages[-1]["role"] == "user":
-            createdMessageValue = await cosmos_conversation_client.create_message(
+            createdMessageValue = await postgres_conversation_client.create_message(
                 uuid=str(uuid.uuid4()),
                 conversation_id=conversation_id,
                 user_id=user_id,
@@ -1108,7 +1120,7 @@ async def add_conversation():
         else:
             raise Exception("No user message found")
 
-        await cosmos_conversation_client.cosmosdb_client.close()
+        await postgres_conversation_client.close()
 
         # Submit request to Chat Completions for response
         request_body = await request.get_json()
@@ -1131,29 +1143,29 @@ async def update_conversation():
     conversation_id = request_json.get("conversation_id", None)
 
     try:
-        # make sure cosmos is configured
-        cosmos_conversation_client = init_cosmosdb_client()
-        if not cosmos_conversation_client:
-            raise Exception("CosmosDB is not configured or not working")
+        # make sure Postgres is configured
+        postgres_conversation_client = await init_postgres_client()
+        if not postgres_conversation_client:
+            raise Exception("PostgresDB is not configured or not working")
 
         # check for the conversation_id, if the conversation is not set, we will create a new one
         if not conversation_id:
             raise Exception("No conversation_id found")
 
         ## Format the incoming message object in the "chat/completions" messages format
-        ## then write it to the conversation history in cosmos
+        ## then write it to the conversation history in Postgres
         messages = request_json["messages"]
         if len(messages) > 0 and messages[-1]["role"] == "assistant":
             if len(messages) > 1 and messages[-2].get("role", None) == "tool":
                 # write the tool message first
-                await cosmos_conversation_client.create_message(
+                await postgres_conversation_client.create_message(
                     uuid=str(uuid.uuid4()),
                     conversation_id=conversation_id,
                     user_id=user_id,
                     input_message=messages[-2],
                 )
             # write the assistant message
-            await cosmos_conversation_client.create_message(
+            await postgres_conversation_client.create_message(
                 uuid=messages[-1]["id"],
                 conversation_id=conversation_id,
                 user_id=user_id,
@@ -1163,7 +1175,7 @@ async def update_conversation():
             raise Exception("No bot messages found")
 
         # Submit request to Chat Completions for response
-        await cosmos_conversation_client.cosmosdb_client.close()
+        await postgres_conversation_client.close()
         response = {"success": True}
         return jsonify(response), 200
 
@@ -1176,7 +1188,7 @@ async def update_conversation():
 async def update_message():
     authenticated_user = get_authenticated_user_details(request_headers=request.headers)
     user_id = authenticated_user["user_principal_id"]
-    cosmos_conversation_client = init_cosmosdb_client()
+    postgres_conversation_client = await init_postgres_client()
 
     ## check request for message_id
     request_json = await request.get_json()
@@ -1189,8 +1201,8 @@ async def update_message():
         if not message_feedback:
             return jsonify({"error": "message_feedback is required"}), 400
 
-        ## update the message in cosmos
-        updated_message = await cosmos_conversation_client.update_message_feedback(
+        ## update the message in Postgres
+        updated_message = await postgres_conversation_client.update_message_feedback(
             user_id, message_id, message_feedback
         )
         if updated_message:
@@ -1232,22 +1244,22 @@ async def delete_conversation():
         if not conversation_id:
             return jsonify({"error": "conversation_id is required"}), 400
 
-        ## make sure cosmos is configured
-        cosmos_conversation_client = init_cosmosdb_client()
-        if not cosmos_conversation_client:
-            raise Exception("CosmosDB is not configured or not working")
+        ## make sure Postgres is configured
+        postgres_conversation_client = await init_postgres_client()
+        if not postgres_conversation_client:
+            raise Exception("PostgresDB is not configured or not working")
 
-        ## delete the conversation messages from cosmos first
-        deleted_messages = await cosmos_conversation_client.delete_messages(
+        ## delete the conversation messages from Postgres first
+        deleted_messages = await postgres_conversation_client.delete_messages(
             conversation_id, user_id
         )
 
         ## Now delete the conversation
-        deleted_conversation = await cosmos_conversation_client.delete_conversation(
+        deleted_conversation = await postgres_conversation_client.delete_conversation(
             user_id, conversation_id
         )
 
-        await cosmos_conversation_client.cosmosdb_client.close()
+        await postgres_conversation_client.close()
 
         return (
             jsonify(
@@ -1269,16 +1281,16 @@ async def list_conversations():
     authenticated_user = get_authenticated_user_details(request_headers=request.headers)
     user_id = authenticated_user["user_principal_id"]
 
-    ## make sure cosmos is configured
-    cosmos_conversation_client = init_cosmosdb_client()
-    if not cosmos_conversation_client:
-        raise Exception("CosmosDB is not configured or not working")
+    ## make sure Postgres is configured
+    postgres_conversation_client = await init_postgres_client()
+    if not postgres_conversation_client:
+        raise Exception("PostgresDB is not configured or not working")
 
-    ## get the conversations from cosmos
-    conversations = await cosmos_conversation_client.get_conversations(
+    ## get the conversations from Postgres
+    conversations = await postgres_conversation_client.get_conversations(
         user_id, offset=offset, limit=25
     )
-    await cosmos_conversation_client.cosmosdb_client.close()
+    await postgres_conversation_client.close()
     if not isinstance(conversations, list):
         return jsonify({"error": f"No conversations for {user_id} were found"}), 404
 
@@ -1299,13 +1311,13 @@ async def get_conversation():
     if not conversation_id:
         return jsonify({"error": "conversation_id is required"}), 400
 
-    ## make sure cosmos is configured
-    cosmos_conversation_client = init_cosmosdb_client()
-    if not cosmos_conversation_client:
-        raise Exception("CosmosDB is not configured or not working")
+    ## make sure Postgres is configured
+    postgres_conversation_client = await init_postgres_client()
+    if not postgres_conversation_client:
+        raise Exception("PostgresDB is not configured or not working")
 
-    ## get the conversation object and the related messages from cosmos
-    conversation = await cosmos_conversation_client.get_conversation(
+    ## get the conversation object and the related messages from Postgres
+    conversation = await postgres_conversation_client.get_conversation(
         user_id, conversation_id
     )
     ## return the conversation id and the messages in the bot frontend format
@@ -1319,8 +1331,8 @@ async def get_conversation():
             404,
         )
 
-    # get the messages for the conversation from cosmos
-    conversation_messages = await cosmos_conversation_client.get_messages(
+    # get the messages for the conversation from Postgres
+    conversation_messages = await postgres_conversation_client.get_messages(
         user_id, conversation_id
     )
 
@@ -1330,13 +1342,13 @@ async def get_conversation():
             "id": msg["id"],
             "role": msg["role"],
             "content": msg["content"],
-            "createdAt": msg["createdAt"],
+            "createdAt": msg["created_at"],
             "feedback": msg.get("feedback"),
         }
         for msg in conversation_messages
     ]
 
-    await cosmos_conversation_client.cosmosdb_client.close()
+    await postgres_conversation_client.close()
     return jsonify({"conversation_id": conversation_id, "messages": messages}), 200
 
 
@@ -1352,13 +1364,13 @@ async def rename_conversation():
     if not conversation_id:
         return jsonify({"error": "conversation_id is required"}), 400
 
-    ## make sure cosmos is configured
-    cosmos_conversation_client = init_cosmosdb_client()
-    if not cosmos_conversation_client:
-        raise Exception("CosmosDB is not configured or not working")
+    ## make sure Postgres is configured
+    postgres_conversation_client = await init_postgres_client()
+    if not postgres_conversation_client:
+        raise Exception("PostgresDB is not configured or not working")
 
-    ## get the conversation from cosmos
-    conversation = await cosmos_conversation_client.get_conversation(
+    ## get the conversation from Postgres
+    conversation = await postgres_conversation_client.get_conversation(
         user_id, conversation_id
     )
     if not conversation:
@@ -1376,11 +1388,11 @@ async def rename_conversation():
     if not title:
         return jsonify({"error": "title is required"}), 400
     conversation["title"] = title
-    updated_conversation = await cosmos_conversation_client.upsert_conversation(
+    updated_conversation = await postgres_conversation_client.upsert_conversation(
         conversation
     )
 
-    await cosmos_conversation_client.cosmosdb_client.close()
+    await postgres_conversation_client.close()
     return jsonify(updated_conversation), 200
 
 
@@ -1392,12 +1404,12 @@ async def delete_all_conversations():
 
     # get conversations for user
     try:
-        ## make sure cosmos is configured
-        cosmos_conversation_client = init_cosmosdb_client()
-        if not cosmos_conversation_client:
-            raise Exception("CosmosDB is not configured or not working")
+        ## make sure Postgres is configured
+        postgres_conversation_client = await init_postgres_client()
+        if not postgres_conversation_client:
+            raise Exception("PostgresDB is not configured or not working")
 
-        conversations = await cosmos_conversation_client.get_conversations(
+        conversations = await postgres_conversation_client.get_conversations(
             user_id, offset=0, limit=None
         )
         if not conversations:
@@ -1405,16 +1417,16 @@ async def delete_all_conversations():
 
         # delete each conversation
         for conversation in conversations:
-            ## delete the conversation messages from cosmos first
-            deleted_messages = await cosmos_conversation_client.delete_messages(
+            ## delete the conversation messages from Postgres first
+            deleted_messages = await postgres_conversation_client.delete_messages(
                 conversation["id"], user_id
             )
 
             ## Now delete the conversation
-            deleted_conversation = await cosmos_conversation_client.delete_conversation(
+            deleted_conversation = await postgres_conversation_client.delete_conversation(
                 user_id, conversation["id"]
             )
-        await cosmos_conversation_client.cosmosdb_client.close()
+        await postgres_conversation_client.close()
         return (
             jsonify(
                 {
@@ -1443,13 +1455,13 @@ async def clear_messages():
         if not conversation_id:
             return jsonify({"error": "conversation_id is required"}), 400
 
-        ## make sure cosmos is configured
-        cosmos_conversation_client = init_cosmosdb_client()
-        if not cosmos_conversation_client:
-            raise Exception("CosmosDB is not configured or not working")
+        ## make sure Postgres is configured
+        postgres_conversation_client = await init_postgres_client()
+        if not postgres_conversation_client:
+            raise Exception("PostgresDB is not configured or not working")
 
-        ## delete the conversation messages from cosmos
-        deleted_messages = await cosmos_conversation_client.delete_messages(
+        ## delete the conversation messages from Postgres
+        deleted_messages = await postgres_conversation_client.delete_messages(
             conversation_id, user_id
         )
 
@@ -1468,45 +1480,45 @@ async def clear_messages():
 
 
 @bp.route("/history/ensure", methods=["GET"])
-async def ensure_cosmos():
-    if not AZURE_COSMOSDB_ACCOUNT:
-        return jsonify({"error": "CosmosDB is not configured"}), 404
+async def ensure_Postgres():
+    if not POSTGRES_DSN:
+        return jsonify({"error": "PostgresDB is not configured"}), 404
 
     try:
-        cosmos_conversation_client = init_cosmosdb_client()
-        success, err = await cosmos_conversation_client.ensure()
-        if not cosmos_conversation_client or not success:
+        postgres_conversation_client = await init_postgres_client()
+        success, err = await postgres_conversation_client.ensure()
+        if not postgres_conversation_client or not success:
             if err:
                 return jsonify({"error": err}), 422
-            return jsonify({"error": "CosmosDB is not configured or not working"}), 500
+            return jsonify({"error": "PostgresDB is not configured or not working"}), 500
 
-        await cosmos_conversation_client.cosmosdb_client.close()
-        return jsonify({"message": "CosmosDB is configured and working"}), 200
+        await postgres_conversation_client.close()
+        return jsonify({"message": "PostgresDB is configured and working"}), 200
     except Exception as e:
         logging.exception("Exception in /history/ensure")
-        cosmos_exception = str(e)
-        if "Invalid credentials" in cosmos_exception:
-            return jsonify({"error": cosmos_exception}), 401
-        elif "Invalid CosmosDB database name" in cosmos_exception:
+        Postgres_exception = str(e)
+        if "Invalid credentials" in Postgres_exception:
+            return jsonify({"error": Postgres_exception}), 401
+        elif "Invalid PostgresDB database name" in Postgres_exception:
             return (
                 jsonify(
                     {
-                        "error": f"{cosmos_exception} {AZURE_COSMOSDB_DATABASE} for account {AZURE_COSMOSDB_ACCOUNT}"
+                        "error": f"{Postgres_exception} {POSTGRES_DSN}"
                     }
                 ),
                 422,
             )
-        elif "Invalid CosmosDB container name" in cosmos_exception:
+        elif "Invalid PostgresDB container name" in Postgres_exception:
             return (
                 jsonify(
                     {
-                        "error": f"{cosmos_exception}: {AZURE_COSMOSDB_CONVERSATIONS_CONTAINER}"
+                        "error": f"{Postgres_exception}: {POSTGRES_DSN}"
                     }
                 ),
                 422,
             )
         else:
-            return jsonify({"error": "CosmosDB is not working"}), 500
+            return jsonify({"error": "PostgresDB is not working"}), 500
 
 
 async def generate_title(conversation_messages):

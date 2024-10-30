@@ -16,12 +16,6 @@
       "metadata": {
         "description": "Prefix Name"
       }
-    },
-    "cosmosLocation": {
-      "type": "string",
-      "metadata": {
-        "description": "CosmosDB Location"
-      }
     }
   },
   "variables": {
@@ -292,7 +286,7 @@
             "value": "[parameters('solutionPrefix')]"
           },
           "solutionLocation": {
-            "value": "[parameters('cosmosLocation')]"
+            "value": "[parameters('solutionLocation')]"
           },
           "managedIdentityObjectId": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.objectId]"
@@ -559,7 +553,7 @@
             "value": "[parameters('solutionPrefix')]"
           },
           "solutionLocation": {
-            "value": "[parameters('cosmosLocation')]"
+            "value": "[parameters('solutionLocation')]"
           }
         },
         "template": {
