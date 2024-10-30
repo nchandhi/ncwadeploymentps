@@ -286,7 +286,7 @@
             "value": "[parameters('solutionPrefix')]"
           },
           "solutionLocation": {
-            "value": "[parameters('solutionLocation')]"
+            "value": "eastus2"
           },
           "managedIdentityObjectId": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, resourceGroup().name), 'Microsoft.Resources/deployments', 'deploy_managed_identity'), '2022-09-01').outputs.managedIdentityOutput.value.objectId]"
@@ -553,7 +553,7 @@
             "value": "[parameters('solutionPrefix')]"
           },
           "solutionLocation": {
-            "value": "[parameters('solutionLocation')]"
+            "value": "eastus2"
           }
         },
         "template": {
