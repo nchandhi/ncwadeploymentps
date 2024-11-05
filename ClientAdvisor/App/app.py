@@ -271,15 +271,12 @@ FUNCTIONAPP_RESPONSE_FIELD_NAME = os.environ.get(
 FUNCTIONAPP_CITATIONS_FIELD_NAME = os.environ.get(
     "FUNCTIONAPP_CITATIONS_FIELD_NAME", "documents"
 )
-AZUREFUNCTION_ENDPOINT = os.environ.get("AZUREFUNCTION_ENDPOINT")
+POSTGRESQL_DATABASENAME = os.environ.get("POSTGRESQL_DATABASENAME")
+POSTGRESQL_SERVER = os.environ.get("POSTGRESQL_SERVER")
 STREAMING_AZUREFUNCTION_ENDPOINT = os.environ.get("STREAMING_AZUREFUNCTION_ENDPOINT")
 # Frontend Settings via Environment Variables
 AUTH_ENABLED = os.environ.get("AUTH_ENABLED", "true").lower() == "true"
-CHAT_HISTORY_ENABLED = (
-    AZURE_COSMOSDB_ACCOUNT
-    and AZURE_COSMOSDB_DATABASE
-    and AZURE_COSMOSDB_CONVERSATIONS_CONTAINER
-)
+CHAT_HISTORY_ENABLED = (POSTGRESQL_DATABASENAME and POSTGRESQL_SERVER)
 SANITIZE_ANSWER = os.environ.get("SANITIZE_ANSWER", "false").lower() == "true"
 frontend_settings = {
     "auth_enabled": AUTH_ENABLED,
@@ -397,6 +394,8 @@ def init_openai_client(use_data=SHOULD_USE_DATA):
 
 async def init_postgres_client():
     postgres_conversation_client = None
+    print(POSTGRES_DSN)
+    print("dsn: ")
     if CHAT_HISTORY_ENABLED:
         try:
             postgres_conversation_client = PostgresConversationClient(
@@ -1554,48 +1553,48 @@ def get_users():
         cursor = conn.cursor()
         sql_stmt = """
         SELECT 
-            ClientId, 
-            Client, 
-            Email, 
-            FORMAT(AssetValue, 'N0') AS AssetValue,
-            ClientSummary,
-            CAST(LastMeeting AS DATE) AS LastMeetingDate,
-            FORMAT(CAST(LastMeeting AS DATE), 'dddd MMMM d, yyyy') AS LastMeetingDateFormatted,
-      FORMAT(LastMeeting, 'hh:mm tt') AS LastMeetingStartTime,
-            FORMAT(LastMeetingEnd, 'hh:mm tt') AS LastMeetingEndTime,
-            CAST(NextMeeting AS DATE) AS NextMeetingDate,
-            FORMAT(CAST(NextMeeting AS DATE), 'dddd MMMM d, yyyy') AS NextMeetingFormatted,
-            FORMAT(NextMeeting, 'hh:mm tt') AS NextMeetingStartTime,
-            FORMAT(NextMeetingEnd, 'hh:mm tt') AS NextMeetingEndTime
-        FROM (
-            SELECT ca.ClientId, Client, Email, AssetValue, ClientSummary, LastMeeting, LastMeetingEnd, NextMeeting, NextMeetingEnd
+                ClientId, 
+                Client, 
+                Email, 
+                TO_CHAR(AssetValue, 'FM999,999,999') AS AssetValue,  -- Format asset value with comma separators
+                ClientSummary,
+                CAST(LastMeeting AS DATE) AS LastMeetingDate,
+                TO_CHAR(CAST(LastMeeting AS DATE), 'Day, FMMonth FMDD, YYYY') AS LastMeetingDateFormatted,  -- Format date as 'Day Month Day, Year'
+                TO_CHAR(LastMeeting, 'HH12:MI AM') AS LastMeetingStartTime,  -- Format time in 12-hour AM/PM format
+                TO_CHAR(LastMeetingEnd, 'HH12:MI AM') AS LastMeetingEndTime,
+                CAST(NextMeeting AS DATE) AS NextMeetingDate,
+                TO_CHAR(CAST(NextMeeting AS DATE), 'Day, FMMonth FMDD, YYYY') AS NextMeetingFormatted,  -- Format date as 'Day Month Day, Year'
+                TO_CHAR(NextMeeting, 'HH12:MI AM') AS NextMeetingStartTime,  -- Format time in 12-hour AM/PM format
+                TO_CHAR(NextMeetingEnd, 'HH12:MI AM') AS NextMeetingEndTime
             FROM (
-                SELECT c.ClientId, c.Client, c.Email, a.AssetValue, cs.ClientSummary
-                FROM Clients c
+                SELECT ca.ClientId, Client, Email, AssetValue, ClientSummary, LastMeeting, LastMeetingEnd, NextMeeting, NextMeetingEnd
+                FROM (
+                    SELECT c.ClientId, c.Client, c.Email, a.AssetValue, cs.ClientSummary
+                    FROM Clients c
+                    JOIN (
+                        SELECT a.ClientId, a.Investment AS AssetValue
+                        FROM (
+                            SELECT ClientId, SUM(Investment) AS Investment,
+                                ROW_NUMBER() OVER (PARTITION BY ClientId ORDER BY AssetDate DESC) AS RowNum
+                            FROM Assets
+                            GROUP BY ClientId, AssetDate
+                        ) a
+                        WHERE a.RowNum = 1
+                    ) a ON c.ClientId = a.ClientId
+                    JOIN ClientSummaries cs ON c.ClientId = cs.ClientId
+                ) ca
                 JOIN (
-                    SELECT a.ClientId, a.Investment AS AssetValue
-                    FROM (
-                        SELECT ClientId, sum(Investment) as Investment,
-                            ROW_NUMBER() OVER (PARTITION BY ClientId ORDER BY AssetDate DESC) AS RowNum
-                        FROM Assets
-                group by ClientId,AssetDate
-                    ) a
-                    WHERE a.RowNum = 1
-                ) a ON c.ClientId = a.ClientId
-                JOIN ClientSummaries cs ON c.ClientId = cs.ClientId
-            ) ca
-            JOIN (
-                SELECT cm.ClientId, 
-                    MAX(CASE WHEN StartTime < GETDATE() THEN StartTime END) AS LastMeeting,
-                    DATEADD(MINUTE, 30, MAX(CASE WHEN StartTime < GETDATE() THEN StartTime END)) AS LastMeetingEnd,
-                    MIN(CASE WHEN StartTime > GETDATE() AND StartTime < GETDATE() + 7 THEN StartTime END) AS NextMeeting,
-                    DATEADD(MINUTE, 30, MIN(CASE WHEN StartTime > GETDATE() AND StartTime < GETDATE() + 7 THEN StartTime END)) AS NextMeetingEnd
-                FROM ClientMeetings cm
-                GROUP BY cm.ClientId
-            ) cm ON ca.ClientId = cm.ClientId
-        ) x
-        WHERE NextMeeting IS NOT NULL
-        ORDER BY NextMeeting ASC;
+                    SELECT cm.ClientId, 
+                        MAX(CASE WHEN StartTime < CURRENT_TIMESTAMP THEN StartTime END) AS LastMeeting,
+                        MAX(CASE WHEN StartTime < CURRENT_TIMESTAMP THEN StartTime END) + INTERVAL '30 minutes' AS LastMeetingEnd,
+                        MIN(CASE WHEN StartTime > CURRENT_TIMESTAMP AND StartTime < CURRENT_TIMESTAMP + INTERVAL '7 days' THEN StartTime END) AS NextMeeting,
+                        MIN(CASE WHEN StartTime > CURRENT_TIMESTAMP AND StartTime < CURRENT_TIMESTAMP + INTERVAL '7 days' THEN StartTime END) + INTERVAL '30 minutes' AS NextMeetingEnd
+                    FROM ClientMeetings cm
+                    GROUP BY cm.ClientId
+                ) cm ON ca.ClientId = cm.ClientId
+            ) x
+            WHERE NextMeeting IS NOT NULL
+            ORDER BY NextMeeting ASC;
         """
         cursor.execute(sql_stmt)
         rows = cursor.fetchall()
@@ -1603,20 +1602,20 @@ def get_users():
         if len(rows) == 0:
             #update ClientMeetings,Assets,Retirement tables sample data to current date
             cursor = conn.cursor()
-            cursor.execute("""select DATEDIFF(d,CAST(max(StartTime) AS Date),CAST(GETDATE() AS Date)) + 3 as ndays from ClientMeetings""")
+            cursor.execute("""SELECT (CURRENT_DATE - CAST(MAX(StartTime) AS DATE)) + 3 AS ndays FROM ClientMeetings;""")
             rows = cursor.fetchall()
             for row in rows:
                 ndays = row['ndays']
-            sql_stmt1 = f'UPDATE ClientMeetings SET StartTime = dateadd(day,{ndays},StartTime), EndTime = dateadd(day,{ndays},EndTime)'
+            sql_stmt1 = f'''UPDATE ClientMeetings SET StartTime = StartTime + INTERVAL '{ndays} days', EndTime = EndTime + INTERVAL '{ndays} days';'''
             cursor.execute(sql_stmt1)
             conn.commit()
             nmonths = int(ndays/30)
             if nmonths > 0:
-                sql_stmt1 = f'UPDATE Assets SET AssetDate = dateadd(MONTH,{nmonths},AssetDate)'
+                sql_stmt1 = f'''UPDATE Assets SET AssetDate = dateadd(MONTH,{nmonths},AssetDate)'''
                 cursor.execute(sql_stmt1)
                 conn.commit()
             
-                sql_stmt1 = f'UPDATE Retirement SET StatusDate = dateadd(MONTH,{nmonths},StatusDate)'
+                sql_stmt1 = f'''UPDATE Retirement SET StatusDate = StatusDate + INTERVAL '{nmonths} MONTH';'''
                 cursor.execute(sql_stmt1)
                 conn.commit()
 
@@ -1628,18 +1627,18 @@ def get_users():
         for row in rows:
             # print(row)
             user = {
-                'ClientId': row['ClientId'],
-                'ClientName': row['Client'],
-                'ClientEmail': row['Email'],
-                'AssetValue': row['AssetValue'],
-                'NextMeeting': row['NextMeetingFormatted'],
-                'NextMeetingTime': row['NextMeetingStartTime'],
-                'NextMeetingEndTime': row['NextMeetingEndTime'],
-                'LastMeeting': row['LastMeetingDateFormatted'],
-                'LastMeetingStartTime': row['LastMeetingStartTime'],
-                'LastMeetingEndTime': row['LastMeetingEndTime'],
-                'ClientSummary': row['ClientSummary']
-                }
+                'ClientId': row[0],
+                'ClientName': row[1],
+                'ClientEmail': row[2],
+                'AssetValue': row[3],
+                'NextMeeting': row[4],
+                'NextMeetingTime': row[5],
+                'NextMeetingEndTime': row[6],
+                'LastMeeting': row[7],
+                'LastMeetingStartTime': row[8],
+                'LastMeetingEndTime': row[9],
+                'ClientSummary': row[10]
+            }
             users.append(user)
             # print(users)
        
