@@ -328,46 +328,72 @@ export const historyRename = async (convId: string, title: string): Promise<Resp
 }
 
 export const historyEnsure = async (): Promise<CosmosDBHealth> => {
+  console.log('Starting historyEnsure fetch request...'); // Log at the start
+
   const response = await fetch('/history/ensure', {
     method: 'GET'
   })
     .then(async res => {
-      const respJson = await res.json()
-      let formattedResponse
+      console.log('Fetch request completed, processing response...'); // Log when the request completes
+
+      let respJson;
+      try {
+        respJson = await res.json();
+        console.log('Fetched JSON response:', respJson); // Log the full JSON response
+      } catch (jsonError) {
+        console.error('Failed to parse JSON response:', jsonError);
+        return {
+          cosmosDB: false,
+          status: 'Invalid JSON response'
+        };
+      }
+
+      let formattedResponse;
+      console.log('Checking if response contains message...');
+      console.log('Response message:', respJson.message); // Log the message directly
+      console.log('Response keys:', Object.keys(respJson)); // Log all keys in response
+
       if (respJson.message) {
-        formattedResponse = CosmosDBStatus.Working
+        formattedResponse = CosmosDBStatus.Working;
       } else {
+        console.log('Message not found, checking status codes...');
         if (res.status === 500) {
-          formattedResponse = CosmosDBStatus.NotWorking
+          formattedResponse = CosmosDBStatus.NotWorking;
         } else if (res.status === 401) {
-          formattedResponse = CosmosDBStatus.InvalidCredentials
+          formattedResponse = CosmosDBStatus.InvalidCredentials;
         } else if (res.status === 422) {
-          formattedResponse = respJson.error
+          formattedResponse = respJson.error || 'Unprocessable Entity';
         } else {
-          formattedResponse = CosmosDBStatus.NotConfigured
+          formattedResponse = CosmosDBStatus.NotConfigured;
         }
       }
+
+      console.log('Response formatted:', formattedResponse); // Log the formatted response
+
       if (!res.ok) {
         return {
           cosmosDB: false,
           status: formattedResponse
-        }
+        };
       } else {
         return {
           cosmosDB: true,
           status: formattedResponse
-        }
+        };
       }
     })
     .catch(err => {
-      console.error('There was an issue fetching your data.')
+      console.error('There was an issue fetching your data:', err); // Log the error directly
       return {
         cosmosDB: false,
-        status: err
-      }
-    })
-  return response
-}
+        status: err.message || 'Fetch error'
+      };
+    });
+
+  console.log('Final response object:', response); // Log the final response object
+  return response;
+};
+
 
 export const frontendSettings = async (): Promise<Response | null> => {
   const response = await fetch('/frontend_settings', {

@@ -13,7 +13,7 @@ load_dotenv()
 
 server = os.environ.get('POSTGRESQL_SERVER')
 database = os.environ.get('POSTGRESQL_DATABASENAME')
-username = os.environ.get('POSTGRESQL_USER')
+username = os.environ.get('POSTGRESQL_USERNAME')
 password = os.environ.get('POSTGRESQL_PASSWORD')
 sslmode='require'
 
