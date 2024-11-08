@@ -255,9 +255,6 @@ for index, item in df.iterrows():
 conn.commit()
 
 
-import pandas as pd
-cursor = conn.cursor()
-
 cursor.execute('DROP TABLE IF EXISTS ClientMeetings')
 conn.commit()
 
