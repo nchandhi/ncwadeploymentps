@@ -17,7 +17,7 @@ postgresqlDbUser="${10}"
 postgresqlDbPwd="${11}"
 sslMode="${12}"
 
-azureOpenAIDeploymentModel="gpt-4"
+azureOpenAIDeploymentModel="gpt-4o"
 azureOpenAIEmbeddingDeployment="text-embedding-ada-002"
 
 env_name=${solutionName}"env"
