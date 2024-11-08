@@ -273,6 +273,8 @@ FUNCTIONAPP_CITATIONS_FIELD_NAME = os.environ.get(
 )
 POSTGRESQL_DATABASENAME = os.environ.get("POSTGRESQL_DATABASENAME")
 POSTGRESQL_SERVER = os.environ.get("POSTGRESQL_SERVER")
+POSTGRESQL_USERNAME = os.environ.get("POSTGRESQL_USERNAME")
+POSTGRESQL_PASSWORD = os.environ.get("POSTGRESQL_PASSWORD")
 STREAMING_AZUREFUNCTION_ENDPOINT = os.environ.get("STREAMING_AZUREFUNCTION_ENDPOINT")
 # Frontend Settings via Environment Variables
 AUTH_ENABLED = os.environ.get("AUTH_ENABLED", "true").lower() == "true"
@@ -295,7 +297,7 @@ frontend_settings = {
 MS_DEFENDER_ENABLED = os.environ.get("MS_DEFENDER_ENABLED", "false").lower() == "true"
 
 VITE_POWERBI_EMBED_URL = os.environ.get("VITE_POWERBI_EMBED_URL")
-POSTGRES_DSN = os.environ.get("POSTGRES_DSN")
+POSTGRES_DSN = f"postgresql://{POSTGRESQL_USERNAME}:{POSTGRESQL_PASSWORD}@{POSTGRESQL_SERVER}:{5432}/{POSTGRESQL_DATABASENAME}"
 
 def should_use_data():
     global DATASOURCE_TYPE
