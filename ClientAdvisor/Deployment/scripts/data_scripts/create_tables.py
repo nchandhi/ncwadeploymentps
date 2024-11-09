@@ -254,6 +254,7 @@ for index, item in df.iterrows():
     cursor.execute(f"INSERT INTO Retirement (ClientId,StatusDate, RetirementGoalProgress, EducationGoalProgress) VALUES (%s,%s,%s,%s)", (item.ClientId, item.StatusDate, item.RetirementGoalProgress, item.EducationGoalProgress))
 conn.commit()
 
+cursor = conn.cursor()
 
 cursor.execute('DROP TABLE IF EXISTS ClientMeetings')
 conn.commit()
@@ -262,8 +263,8 @@ create_cs_sql = """CREATE TABLE ClientMeetings (
                 ClientId int NOT NULL,
                 ConversationId varchar(255),
                 Title varchar(255),
-                StartTime DateTime,
-                EndTime DateTime,
+                StartTime TIMESTAMP,
+                EndTime TIMESTAMP,
                 Advisor varchar(255),
                 ClientEmail varchar(255)
             );"""
