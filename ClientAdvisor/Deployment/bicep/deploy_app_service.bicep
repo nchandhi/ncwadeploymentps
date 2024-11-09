@@ -169,7 +169,7 @@ param STREAMING_AZUREFUNCTION_ENDPOINT string = ''
 param POSTGRESQL_SERVER string = ''
 
 @description('PostgreSQL Database Name')
-param POSTGRESQL_DATABASE string = ''
+param POSTGRESQL_DATABASENAME string = ''
 
 @description('PostgreSQL Username')
 param POSTGRESQL_USERNAME string = ''
